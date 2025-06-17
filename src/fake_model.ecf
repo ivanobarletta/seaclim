@@ -1,0 +1,91 @@
+#!/bin/bash
+%include <scheduler/slurm_login210-19.h>
+
+%include <header/head_slurm.h>
+%include <seaclim_common.h>
+
+echo "=== Fake Model ==="
+echo "Member: %MEMBER%"
+echo "Cycle Start Date: %CYCLE_START_DATE%"
+
+export CALC_BASE_DIR=%CALC_BASE_DIR%
+export HINDCAST_YEAR=%HINDCAST_YEAR%
+export CYCLE_NUMBER=%CYCLE_NUMBER%
+export CYCLE_START_DATE=%CYCLE_START_DATE%
+export CYCLE_START_YEAR=%CYCLE_START_YEAR%
+export CYCLE_START_MONTH=%CYCLE_START_MONTH%
+export INPUT_BASE_DIR=%INPUT_BASE_DIR%
+export MEMBER=%MEMBER%
+export STATIC_FILES_LIST=%STATIC_BASE_DIR%/static_list.txt
+export NPROC_NEMO=%NPROC_NEMO%
+export NPROC_XIOS=%NPROC_XIOS%
+export NN_ITEND=%NN_ITEND%
+export CYCLE_DAYS=%CYCLE_DAYS%
+CYCLE_DAYSm1=$(( CYCLE_DAYS - 1 ))
+NPROC_XIOSm1=$(( NPROC_XIOS - 1 ))
+NPROC_NEMOm1=$(( NPROC_NEMO - 1 ))
+
+# compute following year/month (199311 -> 199312, 199312 -> 199401, ) 
+NEXT_MONTH=$(next_month ${CYCLE_START_MONTH})   # (01->02,09->10,12-01,...)
+if [ ${CYCLE_START_MONTH} -eq 12 ]; then
+    NEXT_YEAR=$(( CYCLE_START_YEAR + 1))
+else
+    NEXT_YEAR=${CYCLE_START_YEAR}
+fi    
+
+# TMPDIR has been created in prepare_run
+TMPDIR=${CALC_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/c${CYCLE_NUMBER}_${CYCLE_START_DATE}
+cd ${TMPDIR}
+
+################## Check Presence of Files ##########################
+
+if [ ! -f namelist_cfg ]; then
+    echo "Error: namelist_cfg not found"
+    exit 1
+fi
+
+if [ ! -f shlat2d.nc ]; then
+    echo "Error: shlat2d.nc not found"
+    exit 1
+fi
+
+while read p
+do 
+    if [ ! -f INPUTS/${p} ]; then
+        echo "File ${p} not found in INPUTS"
+        exit 1
+    fi
+done <${STATIC_FILES_LIST}
+
+echo "Static files: OK"
+
+################## Fake Time Loop ###################################
+
+sleep 10
+
+################## Create fake restart ##############################
+
+for proc in $(seq 0 ${NPROC_NEMOm1}); do
+    rstname=$(printf "eNEATL12_%%08d_restart_oce_%%04d.nc" ${NN_ITEND} ${proc})
+    touch RESTART/${rstname}
+done
+
+################## Create fake outputs ##############################
+
+for day in $(seq 0 ${CYCLE_DAYSm1}); do
+    date=$(date +%%Y%%m%%d -d "${CYCLE_START_DATE} +${day} days")
+    for proc in $(seq 0 ${NPROC_XIOSm1}); do
+        outname=$(printf "eNEATL12_1d25h-m_3DT_%%06d-%%06d_%%04d.nc" ${date} ${date} ${proc})
+        touch ${outname}
+    done
+done 
+
+%manual
+Fake Model: mimicks the NEMO
+    1) check on presence of namelist_cfg
+    2) check on presence of input files
+    3) creates fake outputs
+    4) creates fake restart
+%end
+
+%include <header/tail_slurm.h>

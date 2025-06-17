@@ -1,0 +1,146 @@
+!!>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+!! PISCES reference namelist 
+!!              1  - air-sea exchange                         (nampisext)
+!!              2  - biological parameters                    (nampisbio)
+!!              3  - parameters for nutrient limitations      (nampislim)    
+!!              4  - parameters for phytoplankton             (nampisprod,nampismort)
+!!              5  - parameters for zooplankton               (nampismes,nampiszoo)
+!!              6  - parameters for remineralization          (nampisrem)
+!!              7  - parameters for calcite chemistry         (nampiscal)
+!!              8  - parameters for inputs deposition         (nampissed)
+!!              11 - Damping                                  (nampisdmp)
+!-----------------------------------------------------------------------
+&nampismod     !  Model used 
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nampisext     !   air-sea exchange
+!-----------------------------------------------------------------------
+   ln_co2int   = .true.  ! read atm pco2 from a file (T) or constant (F)
+/
+!-----------------------------------------------------------------------
+&nampisatm     !  Atmospheric prrssure 
+!-----------------------------------------------------------------------
+!              !  file name   ! frequency (hours) ! variable  ! time interp. !  clim  ! 'yearly'/ ! weights  ! rotation ! land/sea mask !
+!              !              !  (if <0  months)  !   name    !   (logical)  !  (T/F) ! 'monthly' ! filename ! pairing  ! filename      !
+   sn_patm     = 'ECMWF_PRES_GAUSS1280'  ,  1     ,'-somslpre',    .true.    , .false. , 'daily'  , 'weights_bilin_GAUSS1280toeNEATL36.nc' , '', ''
+   cn_dir      = 'INPUTS/'      !  root directory for the bulk data location
+!
+   ln_presatm    =  .true.   ! constant atmopsheric pressure (F) or from a file (T)
+/
+!-----------------------------------------------------------------------
+&nampisbio     !   biological parameters
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namp4zlim     !   parameters for nutrient limitations for PISCES std  - ln_p4z
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namp5zlim     !   parameters for nutrient limitations PISCES QUOTA    - ln_p5z
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namp5zquota   !   parameters for nutrient limitations PISCES quota    - ln_p5z
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nampisopt     !   parameters for optics
+!-----------------------------------------------------------------------
+!              !  file name       ! frequency (hours) ! variable  ! time interp. !  clim  ! 'yearly'/ ! weights  ! rotation ! land/sea mask !
+!              !                  !  (if <0  months)  !   name    !   (logical)  !  (T/F) ! 'monthly' ! filename ! pairing  ! filename      !
+   sn_par      = 'par.orca'       ,     24.           , 'fr_par'  ,  .true.      , .true. , 'yearly'  , ''       , ''       , ''
+   cn_dir      = './'      !  root directory for the location of the dynamical files
+   ln_varpar   = .false.   ! boolean for PAR variable
+   parlux      =  0.47      ! Fraction of shortwave as PAR
+/ 
+!-----------------------------------------------------------------------
+&namp2zprod    !   parameters for phytoplankton growth for PISCES reduced  - ln_p2z
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namp4zprod    !   parameters for phytoplankton growth for PISCES std  - ln_p4z
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namp5zprod    !   parameters for phytoplankton growth for PISCES quota- ln_p5z
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namp4zmort    !   parameters for phytoplankton sinks for PISCES std   - ln_p4z
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namp5zmort    !   parameters for phytoplankton sinks for PISCES quota - ln_p5z
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namp4zmes     !   parameters for mesozooplankton for PISCES std       - ln_p4z
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namp5zmes     !   parameters for mesozooplankton
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namp4zzoo     !   parameters for microzooplankton for PISCES std      - ln_p4z
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namp5zzoo     !   parameters for microzooplankton
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nampisfer     !   parameters for iron chemistry
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------  
+&nampisrem     !   parameters for remineralization
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nampispoc     !   parameters for organic particles
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nampisdiaz     !   Namelist parameters for diazotrophy
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nampiscal     !   parameters for Calcite chemistry
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nampisbc      !   parameters for inputs deposition
+!-----------------------------------------------------------------------
+!              !  file name        ! frequency (hours) ! variable      ! time interp. !  clim  ! 'yearly'/ ! weights  ! rotation ! land/sea mask !
+!              !                   !  (if <0  months)  !   name        !   (logical)  !  (T/F) ! 'monthly' ! filename ! pairing  ! filename      !
+   sn_dust     = 'dust_MERCATOR-ORCA025toeNEATL36_.nc' , -1 , 'dust'   ,  .true.      , .true. , 'yearly'  , ''       , ''    , ''
+   sn_ironsed  = 'IBI36_bathyfer.nc',   -12            , 'bathy'       ,  .false.     , .true. , 'yearly'  , ''       , ''    , ''
+   sn_hydrofe  = 'hydrofe.orca'    ,    -12            , 'epsdb'       ,  .false.     , .true. , 'yearly'  , ''       , ''    , ''
+!
+   cn_dir      = 'INPUTS/'      !  root directory for the location of the dynamical files
+   ln_ironsed  =  .true.   ! boolean for Fe input from sediments
+   ln_ironice  =  .false.  ! boolean for Fe input from sea ice
+   ln_hydrofe  =  .false.  ! boolean for from hydrothermal vents
+/
+!-----------------------------------------------------------------------
+&nampislig     !   Namelist parameters for ligands, nampislig
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nampissed     !   Namelist parameters for burial in sediments ( Dune et Al. 2007 )
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nampisice     !   Prescribed sea ice tracers
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nampisdmp     !   Damping 
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nampisdbg     !   Namelist parameters for debugging
+!-----------------------------------------------------------------------
+/

@@ -1,0 +1,59 @@
+#!/bin/bash
+%include <scheduler/slurm_login210-19.h>
+
+%include <header/head_slurm.h>
+%include <seaclim_common.h>
+
+echo "=== Creating Links for BDY Files ==="
+echo "Member: %MEMBER%"
+echo "Cycle Start Date: %CYCLE_START_DATE%"
+
+export CYCLE_START_YEAR=%CYCLE_START_YEAR%
+export CYCLE_START_MONTH=%CYCLE_START_MONTH%
+export INPUT_BASE_DIR=%INPUT_BASE_DIR%
+export MEMBER=%MEMBER%
+
+# compute following year/month (199311 -> 199312, 199312 -> 199401, ) 
+NEXT_MONTH=$(next_month ${CYCLE_START_MONTH})   # (01->02,09->10,12-01,...)
+if [ ${CYCLE_START_MONTH} -eq 12 ]; then
+    NEXT_YEAR=$(( CYCLE_START_YEAR + 1))
+else
+    NEXT_YEAR=${CYCLE_START_YEAR}
+fi    
+
+BDY_DIR="%INPUT_BASE_DIR%/bdy/M%MEMBER%/%CYCLE_START_YEAR%/"
+TMPDIR="%CALC_BASE_DIR%/M%MEMBER%/H%HINDCAST_YEAR%/c%CYCLE_NUMBER%_%CYCLE_START_DATE%"
+TMPDIR_BDY=${TMPDIR}/INPUTS/BDY
+STATIC_BDY="%STATIC_BASE_DIR%/bdy"
+BDY_DIR_NEXT_YEAR=${INPUT_BASE_DIR}/bdy/M${MEMBER}/${NEXT_YEAR}/
+
+echo "linking files from: ${BDY_DIR}"
+echo "to: ${TMPDIR_BDY}"
+
+# force creation of soft link  
+/bin/ln -sf ${BDY_DIR}/eNEATL12_obcdta_*y${CYCLE_START_YEAR}m${CYCLE_START_MONTH}.nc ${TMPDIR_BDY}
+
+# link also data of follwing month
+/bin/ln -sf ${BDY_DIR_NEXT_YEAR}/eNEATL12_obcdta_*y${NEXT_YEAR}m${NEXT_MONTH}.nc ${TMPDIR_BDY}
+
+echo "Linking BDY completed"
+
+%manual
+recup_atm:
+    fills the INPUT/BDY folder in the local run working directory 
+    for the specific month cycle and the subsequent month. 
+    for cycle 19931201 is:
+    runs/M000/H1993/c01_19931201/INPUTS/BDY/
+        eNEATL12_obcdta_east_y1993m12.nc
+        eNEATL12_obcdta_east_y1994m01.nc
+        eNEATL12_obcdta_north_y1993m12.nc
+        eNEATL12_obcdta_north_y1994m01.nc
+        eNEATL12_obcdta_south_1_y1993m12.nc
+        eNEATL12_obcdta_south_1_y1994m01.nc
+        eNEATL12_obcdta_south_2_y1993m12.nc
+        eNEATL12_obcdta_south_2_y1994m01.nc
+        eNEATL12_obcdta_west_y1993m12.nc
+        eNEATL12_obcdta_west_y1994m01.nc
+%end
+
+%include <header/tail_slurm.h>

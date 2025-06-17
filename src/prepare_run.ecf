@@ -1,0 +1,74 @@
+#!/bin/bash
+%include <scheduler/slurm_login210-19.h>
+
+%include <header/head_slurm.h>
+%include <seaclim_common.h>
+
+LOG_DIR="%LOG_BASE_DIR%/M%MEMBER%/H%HINDCAST_YEAR%/c%CYCLE_NUMBER%_%CYCLE_START_DATE%/"
+
+echo "Preparing the run for:"
+echo "MEMBER            : %MEMBER%"
+echo "HINDCAST          : %HINDCAST_YEAR%"
+echo "cycle             : %CYCLE_NUMBER%" 
+echo "cycle start date  : %CYCLE_START_DATE%" 
+echo "nModelSteps:      : %MODEL_STEPS%"
+echo "nn_it000          : %NN_IT000%"
+echo "nn_itend          : %NN_ITEND%"
+echo ""
+echo "log will be stored in: ${LOG_DIR}"
+
+# prepare folder. Format:
+# CALC_BASE_DIR/
+#     M???/
+#         HYYYY/
+#             c??_YYYYmmdd/
+
+export CALC_BASE_DIR=%CALC_BASE_DIR%
+export MEMBER=%MEMBER%
+export HINDCAST_YEAR=%HINDCAST_YEAR%
+export CYCLE_NUMBER=%CYCLE_NUMBER%
+export CYCLE_START_DATE=%CYCLE_START_DATE%
+
+######################### RUN FOLDER #####################################################
+
+# create the folder and cd into it
+TMPDIR=${CALC_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/c${CYCLE_NUMBER}_${CYCLE_START_DATE}
+TMPDIR_ATM=${TMPDIR}/INPUTS/ATM
+TMPDIR_BDY=${TMPDIR}/INPUTS/BDY
+TMPDIR_RST=${TMPDIR}/RESTART        # local folder to cast restart of current cycle
+TMPDIR_CI=${TMPDIR}/CI              # where to put init restart
+
+
+/bin/mkdir -p ${TMPDIR}  
+/bin/mkdir -p ${TMPDIR_ATM}
+/bin/mkdir -p ${TMPDIR_BDY}
+/bin/mkdir -p ${TMPDIR_RST}
+/bin/mkdir -p ${TMPDIR_CI}
+cd ${TMPDIR}
+
+######################### NAMELIST #######################################################
+
+export TEMPLATE=%MAIN_DIR%/static/nml/namelist_cfg_template
+export NEW_NML=${TMPDIR}/namelist_cfg 
+
+export NN_IT000=%NN_IT000%
+export NN_ITEND=%NN_ITEND%
+export NN_DATE0=${CYCLE_START_DATE}
+
+sed_namelist ${TEMPLATE} ${NEW_NML}
+
+######################### STATIC FILES ###################################################
+
+export STATIC_OCEAN_DIR=%STATIC_BASE_DIR%/ocean
+/bin/ln -sf ${STATIC_OCEAN_DIR}/*.nc ${TMPDIR}/INPUTS
+/bin/ln -sf ${STATIC_OCEAN_DIR}/shlat2d.nc ${TMPDIR}  # shtlat.nc goes in the main folder
+
+
+%manual
+Prepare run:
+    1) Create run folder
+    2) prepare namelists
+    3) copy necessary static files
+%end
+
+%include <header/tail_slurm.h>

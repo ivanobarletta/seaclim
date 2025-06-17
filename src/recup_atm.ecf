@@ -1,0 +1,72 @@
+#!/bin/bash
+%include <scheduler/slurm_login210-19.h>
+
+%include <header/head_slurm.h>
+%include <seaclim_common.h>
+
+echo "=== Creating Links for ATM Files ==="
+echo "Member: %MEMBER%"
+echo "Cycle Start Date: %CYCLE_START_DATE%"
+
+export CYCLE_START_YEAR=%CYCLE_START_YEAR%
+export CYCLE_START_MONTH=%CYCLE_START_MONTH%
+export INPUT_BASE_DIR=%INPUT_BASE_DIR%
+export MEMBER=%MEMBER%
+
+# compute following year/month (199311 -> 199312, 199312 -> 199401, ) 
+NEXT_MONTH=$(next_month ${CYCLE_START_MONTH})   # (01->02,09->10,12-01,...)
+if [ ${CYCLE_START_MONTH} -eq 12 ]; then
+    NEXT_YEAR=$(( CYCLE_START_YEAR + 1))
+else
+    NEXT_YEAR=${CYCLE_START_YEAR}
+fi    
+
+ATM_DIR="%INPUT_BASE_DIR%/atm/M%MEMBER%/%CYCLE_START_YEAR%/"
+TMPDIR="%CALC_BASE_DIR%/M%MEMBER%/H%HINDCAST_YEAR%/c%CYCLE_NUMBER%_%CYCLE_START_DATE%"
+TMPDIR_ATM=${TMPDIR}/INPUTS/ATM
+STATIC_ATM="%STATIC_BASE_DIR%/atm"
+ATM_DIR_NEXT_YEAR=${INPUT_BASE_DIR}/atm/M${MEMBER}/${NEXT_YEAR}/
+
+echo "linking files from: ${ATM_DIR}"
+echo "to: ${TMPDIR_ATM}"
+
+# force creation of soft link  
+/bin/ln -sf ${ATM_DIR}/ERA5_*y${CYCLE_START_YEAR}m${CYCLE_START_MONTH}.nc ${TMPDIR_ATM}
+
+# link also data of follwing month
+/bin/ln -sf ${ATM_DIR_NEXT_YEAR}/ERA5_*y${NEXT_YEAR}m${NEXT_MONTH}.nc ${TMPDIR_ATM}
+
+# create soft links for atm static files
+/bin/ln -sf ${STATIC_ATM}/*nc ${TMPDIR_ATM}
+
+echo "Linking ATM completed"
+
+%manual
+recup_atm:
+    fills the INPUT/ATM folder in the local run working directory 
+    for the specific month cycle and the subsequent month. The folder is also
+    filled with weights files and reference mslp timeseries.
+    for cycle 19931201 is:
+    runs/M000/H1993/c01_19931201/INPUTS/ATM/
+        ERA5_BULKHUMI_1H_y1993m12.nc
+        ERA5_BULKHUMI_1H_y1994m01.nc
+        ERA5_BULKTAIR_1H_y1993m12.nc
+        ERA5_BULKTAIR_1H_y1994m01.nc
+        ERA5_BULKU10M_1H_y1993m12.nc
+        ERA5_BULKU10M_1H_y1994m01.nc
+        ERA5_BULKV10M_1H_y1993m12.nc
+        ERA5_BULKV10M_1H_y1994m01.nc
+        ERA5_FLUXPRE_1H_y1993m12.nc
+        ERA5_FLUXPRE_1H_y1994m01.nc
+        ERA5_FLUXSSRD_1H_y1993m12.nc
+        ERA5_FLUXSSRD_1H_y1994m01.nc
+        ERA5_FLUXSTRD_1H_y1993m12.nc
+        ERA5_FLUXSTRD_1H_y1994m01.nc
+        ERA5_MSLP_1H_y1993m12.nc
+        ERA5_MSLP_1H_y1994m01.nc
+        pref_series_y1993.nc
+        weights_bicubic.nc
+        weights_bilinear.nc
+%end
+
+%include <header/tail_slurm.h>
