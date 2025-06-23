@@ -26,7 +26,7 @@ NPROC_XIOSm1=$(( NPROC_XIOS - 1 ))
 NPROC_NEMOm1=$(( NPROC_NEMO - 1 ))
 
 # compute following year/month (199311 -> 199312, 199312 -> 199401, ) 
-NEXT_MONTH=$(next_month ${CYCLE_START_MONTH})   # (01->02,09->10,12-01,...)
+NEXT_MONTH=$(next_month ${CYCLE_START_MONTH})   # (01->02,09->10,12->01,...)
 if [ ${CYCLE_START_MONTH} -eq 12 ]; then
     NEXT_YEAR=$(( CYCLE_START_YEAR + 1))
 else
