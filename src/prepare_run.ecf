@@ -57,6 +57,9 @@ export NN_DATE0=${CYCLE_START_DATE}
 
 sed_namelist ${TEMPLATE} ${NEW_NML}
 
+# xml
+/bin/ln -sf %MAIN_DIR%/static/nml/*xml ${TMPDIR}
+
 ######################### STATIC FILES ###################################################
 
 export STATIC_OCEAN_DIR=%STATIC_BASE_DIR%/ocean

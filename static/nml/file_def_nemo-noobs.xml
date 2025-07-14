@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+    <!-- 
+         ============================================================================================================
+=                                           output files definition                                        =
+=                                            Define your own files                                         =
+=                                         put the variables you want...                                    =
+============================================================================================================
+    -->
+
+    <file_definition type="multiple_file" name="OUTPUTS/@expname@_@freq@" sync_freq="1d" min_digits="4">
+      <file_group id="noobs1ts" output_freq="1ts" output_level="10" enabled=".FALSE."/> <!-- 1 time step files -->
+      <file_group id="noobs1h"  output_freq="1h"  split_freq="1d" output_level="10" enabled=".FALSE." > <!-- 1h files -->
+         <file id="file1" name_suffix="-i_2DT-NOOBS" description="ocean T grid variables" >
+￼           <field field_ref="sst"            name="tos"     operation="instant" />
+            <field field_ref="ssh"          name="ssh"     operation="instant" />
+            <field field_ref="steric"       name="st"      operation="instant" />
+            <field field_ref="ssh_ib"       name="ssh_ib"  operation="instant" />
+         </file>
+      </file_group>
+      <file_group id="noobs2h"  output_freq="2h"  output_level="10" enabled=".FALSE."/> <!-- 2h files -->
+      <file_group id="noobs3h"  output_freq="3h"  split_freq="1d" output_level="10" enabled=".FALSE." > <!-- 3h files -->
+         <file id="file2" name_suffix="-i_3DT-thetao-NOOBS" description="ocean T grid variables" >
+            <field field_ref="toce"         name="thetao"  operation="instant" />
+         </file>
+         <file id="file3" name_suffix="-i_3DT-so-NOOBS" description="ocean T grid variables" >
+            <field field_ref="soce"         name="so"      operation="instant" />
+         </file>
+      </file_group>
+      <file_group id="noobs4h"  output_freq="4h"  output_level="10" enabled=".FALSE."/> <!-- 4h files -->
+      <file_group id="noobs6h"  output_freq="6h"  output_level="10" enabled=".FALSE."/> <!-- 6h files -->
+      <file_group id="noobs1d"  output_freq="1d"  output_level="10" enabled=".FALSE." > <!-- 1d files -->
+         <file id="file4" name_suffix="-i_2DT-chl-NOOBS" description="pisces sms variables" >
+            <field field_ref="SCHL"         name="schl"    operation="instant" />
+         </file>
+      </file_group>
+      <file_group id="noobs3d"  output_freq="3d"  output_level="10" enabled=".FALSE."/> <!-- 3d files -->
+      <file_group id="noobs5d"  output_freq="5d"  output_level="10" enabled=".FALSE."/> <!-- 5d files -->
+      <file_group id="noobs7d"  output_freq="7d"  output_level="10" enabled=".FALSE."/> <!-- 7d files -->
+      <file_group id="noobs1m"  output_freq="1mo" output_level="10" enabled=".FALSE."/> <!-- 1d files -->
+      <file_group id="noobs2m"  output_freq="2mo" output_level="10" enabled=".FALSE."/> <!-- real 2m files -->
+      <file_group id="noobs3m"  output_freq="3mo" output_level="10" enabled=".FALSE."/> <!-- real 3m files -->
+      <file_group id="noobs4m"  output_freq="4mo" output_level="10" enabled=".FALSE."/> <!-- real 4m files -->
+      <file_group id="noobs6m"  output_freq="6mo" output_level="10" enabled=".FALSE."/> <!-- real 6m files -->
+      <file_group id="noobs1y"  output_freq="1y"  output_level="10" enabled=".FALSE."/> <!-- real yearly files -->
+      <file_group id="noobs2y"  output_freq="2y"  output_level="10" enabled=".FALSE."/> <!-- real 2y files -->
+      <file_group id="noobs5y"  output_freq="5y"  output_level="10" enabled=".FALSE."/> <!-- real 5y files -->
+      <file_group id="noobs10y" output_freq="10y" output_level="10" enabled=".FALSE."/> <!-- real 10y files -->
+   </file_definition>

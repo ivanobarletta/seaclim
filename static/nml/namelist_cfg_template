@@ -33,7 +33,7 @@
 &namrun        !   parameters of the run
 !-----------------------------------------------------------------------
    nn_no       =       0   !  Assimilation cycle index
-   cn_exp      = "eNEATL12" !  experience name
+   cn_exp      = "{MEMBER}eNEATL12" !  experience name
    nn_it000    =  {NN_IT000}  !  first time step
    nn_itend    =  {NN_ITEND}    !  last  time step (std 5840)
    nn_date0    =  {NN_DATE0}  !  date at nit_0000 (format yyyymmdd) used if ln_rstart=F or (ln_rstart=T and nn_rstctl=0 or 1)
@@ -44,7 +44,7 @@
       !                          !    = 0 nn_date0 read in namelist ; nn_it000 : read in namelist
       !                          !    = 1 nn_date0 read in namelist ; nn_it000 : check consistancy between namelist and restart
       !                          !    = 2 nn_date0 read in restart  ; nn_it000 : check consistancy between namelist and restart
-      cn_ocerst_in    = "CI/eNEATL12_CI_restart_oce" !  suffix of ocean restart name (input)
+      cn_ocerst_in    = "CI/{MEMBER}eNEATL12_restart_oce" !  suffix of ocean restart name (input)
       cn_ocerst_indir =                                      "./" !  directory from which to read input ocean restarts
       cn_ocerst_out   =                                                  "restart_oce" !  suffix of ocean restart name (output)
       cn_ocerst_outdir =  "RESTART/" !  directory in which to write output ocean restarts
@@ -204,15 +204,15 @@
    !___________!_________________________!___________________!___________!_____________!________!___________!______________________________________!__________!_______________!
    !           !  file name              ! frequency (hours) ! variable  ! time interp.!  clim  ! 'yearly'/ !       weights filename               ! rotation ! land/sea mask !
    !           !                         !  (if <0  months)  !   name    !   (logical) !  (T/F) ! 'monthly' !                                      ! pairing  !    filename   !
-   sn_wndi     = 'ERA5_BULKU10M_1H_extrap',        1.        , '-u10'    ,   .true.    , .false., 'monthly' , 'weights_bicubic.nc'                 ,   'U10'  ,      ''
-   sn_wndj     = 'ERA5_BULKV10M_1H_extrap',        1.        , '-v10'    ,   .true.    , .false., 'monthly' , 'weights_bicubic.nc'                 ,   'V10'  ,      ''
-   sn_qsr      = 'ERA5_FLUXSSRD_1H_extrap',        1.        , 'ssrd'    ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
-   sn_qlw      = 'ERA5_FLUXSTRD_1H_extrap',        1.        , 'strd'    ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
-   sn_tair     = 'ERA5_BULKTAIR_1H_extrap',        1.        , '-t2m'    ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
-   sn_humi     = 'ERA5_BULKHUMI_1H_extrap',        1.        , '-q2m'    ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
-   sn_prec     = 'ERA5_FLUXPRE_1H_extrap' ,        1.        ,   'tp'    ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_wndi     = 'ERA5_BULKU10M_1H'       ,        1.        , '-u10'    ,   .true.    , .false., 'monthly' , 'weights_bicubic.nc'                 ,   'U10'  ,      ''
+   sn_wndj     = 'ERA5_BULKV10M_1H'       ,        1.        , '-v10'    ,   .true.    , .false., 'monthly' , 'weights_bicubic.nc'                 ,   'V10'  ,      ''
+   sn_qsr      = 'ERA5_FLUXSSRD_1H'       ,        1.        , 'ssrd'    ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_qlw      = 'ERA5_FLUXSTRD_1H'       ,        1.        , 'strd'    ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_tair     = 'ERA5_BULKTAIR_1H'       ,        1.        , '-t2m'    ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_humi     = 'ERA5_BULKHUMI_1H'       ,        1.        , '-q2m'    ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_prec     = 'ERA5_FLUXPRE_1H'        ,        1.        ,   'tp'    ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
    sn_snow     = 'NOT USED'               ,      -12.        , 'snow'    ,   .false.   , .true. , 'monthly',            ''                         ,     ''   ,      ''
-   sn_slp      = 'ERA5_MSLP_1H_extrap'    ,        1.        , '-msl'    ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_slp      = 'ERA5_MSLP_1H'           ,        1.        , '-msl'    ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
    sn_cc       = 'NOT USED'              , 24.               , 'CC'       , .false.    , .true. , 'yearly'  , 'weights_core_orca2_bilinear_noc.nc'  , ''      , ''
    sn_hpgi     = 'NOT USED'              , 24.               , 'uhpg'     , .false.    , .false., 'monthly' , ''                                    , 'UG'    , ''
    sn_hpgj     = 'NOT USED'              , 24.               , 'vhpg'     , .false.    , .false., 'monthly' , ''                                    , 'VG'    , ''
@@ -292,7 +292,7 @@
    !___________!_________________________!___________________!___________!_____________!________!___________!__________________!__________!_______________!
    !           !  file name              ! frequency (hours) ! variable  ! time interp.!  clim  ! 'yearly'/ ! weights filename ! rotation ! land/sea mask !
    !           !                         !  (if <0  months)  !   name    !   (logical) !  (T/F) ! 'monthly' !                  ! pairing  !    filename   !
-   sn_apr      = 'ERA5_MSLP_1H_extrap'   ,         1         ,   '-msl'  ,   .true.    , .false.,  'monthly', 'weights_bilinear.nc', ''   ,       ''
+   sn_apr      = 'ERA5_MSLP_1H'          ,         1         ,   '-msl'  ,   .true.    , .false.,  'monthly', 'weights_bilinear.nc', ''   ,       ''
    sn_apref    =   'pref_series'         ,         1         ,   '-msl'  ,   .true.    , .false.,  'yearly' ,         ''           , ''   ,       ''
 /
 !-----------------------------------------------------------------------

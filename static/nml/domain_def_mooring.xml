@@ -1,0 +1,11 @@
+<domain_definition>
+
+  <!-- moorings -->
+  <domain_group prec="8">
+    <domain dim_i_name="site" id="domain_moorings_T" lat_name="lat" lon_name="lon" prec="8" type="unstructured">
+      <generate_rectilinear_domain />
+      <interpolate_domain mode="read" weight_filename="INPUTS/weights_grid_T.nc" read_write_convention="fortran" />
+     </domain>
+  </domain_group>
+
+</Domain_definition>

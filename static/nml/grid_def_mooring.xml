@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+     ============================================================================================================
+= grid definition = = DO NOT CHANGE =
+============================================================================================================
+-->
+
+<grid_definition>
+
+  <!-- moorings -->
+  <grid id="grid_moorings_T_2D">
+    <domain domain_ref="domain_moorings_T" />
+  </grid>
+  <grid id="grid_moorings_T_3D">
+    <domain domain_ref="domain_moorings_T" />
+    <axis axis_ref="deptht" />
+  </grid>
+  <grid id="grid_moorings_W_3D">
+    <domain domain_ref="domain_moorings_T" />
+    <axis axis_ref="depthw" />
+  </grid>
+
+</grid_definition>

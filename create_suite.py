@@ -17,18 +17,20 @@ suite = defs.add_suite("seaclim_ensemble")
 
 suite.add_variable("ECF_JOB_CMD"    , "sbatch %ECF_JOB% 2>&1")
 
-suite.add_variable("ECF_HOME"       , "/home/empresa/now/iba/ecflow_server")
-suite.add_variable("ECF_INCLUDE"    , "/mnt/netapp2/Store_uni/home/empresa/now/iba/tests/test_SeaClim/include")
-suite.add_variable("ECF_FILES"      , "/mnt/netapp2/Store_uni/home/empresa/now/iba/tests/test_SeaClim/src/")
-suite.add_variable("SCRATCH_DIR"    , "/path/to/scratch")
-suite.add_variable("INPUT_BASE_DIR" , "/mnt/netapp2/Store_uni/home/empresa/now/iba/tests/test_SeaClim/inputs")
-suite.add_variable("OUTPUT_BASE_DIR", "/mnt/netapp2/Store_uni/home/empresa/now/iba/tests/test_SeaClim/outputs")
-suite.add_variable("MAIN_DIR"       , "/mnt/netapp2/Store_uni/home/empresa/now/iba/tests/test_SeaClim/")
-suite.add_variable("CALC_BASE_DIR"  , "/mnt/netapp2/Store_uni/home/empresa/now/iba/tests/test_SeaClim/runs")
-suite.add_variable("LOG_BASE_DIR"   , "/mnt/netapp2/Store_uni/home/empresa/now/iba/tests/test_SeaClim/logs")
-suite.add_variable("STATIC_BASE_DIR", "/mnt/netapp2/Store_uni/home/empresa/now/iba/tests/test_SeaClim/static")
-suite.add_variable("NPROC_NEMO"     , 100)
-suite.add_variable("NPROC_XIOS"     , 10)
+main_dir = "/mnt/lustre/scratch/nlsas/home/empresa/now/iba/seaclim"
+
+suite.add_variable("ECF_HOME"           , "/home/empresa/now/iba/ecflow_server")
+suite.add_variable("MAIN_DIR"           , f"{main_dir}/")
+suite.add_variable("ECF_INCLUDE"        , f"{main_dir}/include")
+suite.add_variable("ECF_FILES"          , f"{main_dir}/src/")
+suite.add_variable("STATIC_BASE_DIR"    , f"{main_dir}/static")
+suite.add_variable("INPUT_BASE_DIR"     , f"{main_dir}/inputs")
+suite.add_variable("OUTPUT_BASE_DIR"    , f"{main_dir}/outputs")
+suite.add_variable("RESTART_BASE_DIR"   , f"{main_dir}/restarts")
+suite.add_variable("CALC_BASE_DIR"      , f"{main_dir}/runs")
+suite.add_variable("LOG_BASE_DIR"       , f"{main_dir}/logs")
+suite.add_variable("NPROC_NEMO"         , 100)
+suite.add_variable("NPROC_XIOS"         , 10)
 
 suite.add_variable("HOST"           , 'login210-19')
 suite.add_variable("USER"           , 'emnowiba')
@@ -118,17 +120,17 @@ for member in membersList:
 
             task_prepare_run = cycle_family.add_task(f"prepare_run")    
 
-            task_recup_atm = cycle_family.add_task(f"recup_atm")
-            task_recup_atm.add( Trigger( "prepare_run == complete") )
+            #task_recup_atm = cycle_family.add_task(f"recup_atm")
+            #task_recup_atm.add( Trigger( "prepare_run == complete") )
             
-            task_recup_bdy = cycle_family.add_task(f"recup_bdy")
-            task_recup_bdy.add( Trigger( "prepare_run == complete") )
+            #task_recup_bdy = cycle_family.add_task(f"recup_bdy")
+            #task_recup_bdy.add( Trigger( "prepare_run == complete") )
 
             #task_model_run = cycle_family.add_task(f"model_run")
             #task_model_run.add( Trigger ( "prepare_run == complete" ) )
 
-            task_fake_model = cycle_family.add_task(f"fake_model")
-            task_fake_model.add( Trigger ( "recup_atm == complete and recup_bdy == complete" ))
+            #task_fake_model = cycle_family.add_task(f"fake_model")
+            #task_fake_model.add( Trigger ( "recup_atm == complete and recup_bdy == complete" ))
 
             # task move restart
             

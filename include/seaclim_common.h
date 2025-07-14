@@ -25,6 +25,7 @@ sed_namelist () {
     new_nml=$2
 
     SED_REPLACEMENTS=(
+    "s/{MEMBER}/${MEMBER}/g"        
     "s/{NN_IT000}/${NN_IT000}/g"
     "s/{NN_ITEND}/${NN_ITEND}/g"
     "s/{NN_DATE0}/${NN_DATE0}/g"
