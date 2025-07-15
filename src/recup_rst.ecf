@@ -44,26 +44,26 @@ echo "Linking RST completed"
 recup_rst:
     fills the CI/ folder in the local run working directory 
     if the cycle number is 00 the files are taken from 
-        RESTART_BASE_DIR/INIT/restart_oce_????1101.nc 
+        ${RESTART_BASE_DIR}/INIT/restart_oce_????1101.nc 
     otherwise are takens according to the member, hindcast year and previous cycle 
 
     cycle_00 (19931101 -> 19931201) procudes restart:
 	000eNEATL12_H1993_C00_restart_oce_0000.nc
 
     the cycle_00 will create the folder:
-	    restart/M000/H1993/C00_19931101/
+	    ${RESTART_BASE_DIR}/M000/H1993/C00_19931101/
     to store its restart:
 	    000eNEATL12_H1993_C00_restart_oce_0000.nc
 
     cycle_01 (19931201 -> 19940101) will search for:
-	    restart/M000/H1993/C00_19931101/
+	    ${RESTART_BASE_DIR}/M000/H1993/C00_19931101/
 		    000eNEATL12_H1993_C00_restart_oce_0000.nc
 
     This way the cycle_{m} (for m>00) will search in the folder of cycle_{m-1}, that has
     been already created.
 
     cycle 00 will search in the folder:
-	    restart/INIT/
+	    ${RESTART_BASE_DIR}/INIT/
 %end
 
 %include <header/tail_slurm.h>
