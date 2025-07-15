@@ -25,7 +25,9 @@ sed_namelist () {
     new_nml=$2
 
     SED_REPLACEMENTS=(
-    "s/{MEMBER}/${MEMBER}/g"        
+    "s/{MEMBER}/${MEMBER}/g"   
+    "s/{HINDCAST_YEAR}/${HINDCAST_YEAR}/g"
+    "s/{CYCLE_NUMBER}/${CYCLE_NUMBER}/g"             
     "s/{NN_IT000}/${NN_IT000}/g"
     "s/{NN_ITEND}/${NN_ITEND}/g"
     "s/{NN_DATE0}/${NN_DATE0}/g"
@@ -72,6 +74,24 @@ next_month() {
     # Print the result, formatted to always be two digits (e.g., 1 becomes 01, 10 remains 10).
     # double %% is necessary for proper conversion to .ecf
     printf "%%02d\n" "$next_month_int"  
+}
+
+previous_cycle() {
+    local input_cycle="$1"
+
+    if [ "${input_cycle}" -eq "00" ]; then 
+        echo "Error. previous_cycle(). You cannot provide 00"
+        echo "       As input"
+        exit 1 
+    fi    
+    prev_cycle=$((input_cycle - 1))
+    printf "%%02d\n" "${prev_cycle}"
+}
+
+next_cycle() {
+    local input_cycle=$1
+    next_cycle=$((input_cycle + 1))
+    printf "%%02d\n" "${next_cycle}"
 }
 
 
