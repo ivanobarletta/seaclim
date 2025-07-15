@@ -32,7 +32,7 @@ export CYCLE_START_DATE=%CYCLE_START_DATE%
 ######################### RUN FOLDER #####################################################
 
 # create the folder and cd into it
-TMPDIR=${CALC_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/c${CYCLE_NUMBER}_${CYCLE_START_DATE}
+TMPDIR=${CALC_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}
 TMPDIR_ATM=${TMPDIR}/INPUTS/ATM
 TMPDIR_BDY=${TMPDIR}/INPUTS/BDY
 TMPDIR_RST=${TMPDIR}/RESTART        # local folder to cast restart of current cycle
@@ -48,17 +48,19 @@ cd ${TMPDIR}
 
 ######################### NAMELIST #######################################################
 
-export TEMPLATE=%MAIN_DIR%/static/nml/namelist_cfg_template
+export TEMPLATE_CFG=%MAIN_DIR%/static/nml/namelist_cfg_template
+export TEMPLATE_REF=%MAIN_DIR%/static/nml/namelist_ref
 export NEW_NML=${TMPDIR}/namelist_cfg 
 
 export NN_IT000=%NN_IT000%
 export NN_ITEND=%NN_ITEND%
 export NN_DATE0=${CYCLE_START_DATE}
 
-sed_namelist ${TEMPLATE} ${NEW_NML}
+sed_namelist ${TEMPLATE_CFG} ${NEW_NML}
+/bin/ln -sf ${TEMPLATE_REF} .
 
 # xml
-/bin/ln -sf %MAIN_DIR%/static/nml/*xml ${TMPDIR}
+/bin/ln -sf %STATIC_BASE_DIR%/nml/*xml ${TMPDIR}
 
 ######################### STATIC FILES ###################################################
 
