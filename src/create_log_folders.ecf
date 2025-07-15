@@ -32,7 +32,7 @@ for mem in $(seq -f "%%03g" 0 ${MEMBERSm1}); do                      # loop over
             echo "cycle: ${cycle}"
             start_date=$(date -d "${year}-11-01 +${cycle} months" +%%Y%%m%%d)
 
-            mkdir -p c${cycle}_${start_date}                                      # c00_19931101,c01_19931201.. (create if not existing)
+            mkdir -p C${cycle}_${start_date}                                      # C00_19931101,C01_19931201.. (create if not existing)
         done
         cd ..
     done

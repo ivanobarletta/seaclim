@@ -5,7 +5,8 @@
 %include <seaclim_common.h>
 
 echo "=== Creating Links for BDY Files ==="
-echo "Member: %MEMBER%"
+echo "Member          : %MEMBER%"
+echo "Hindcast Year   : %HINDCAST_YEAR%"
 echo "Cycle Start Date: %CYCLE_START_DATE%"
 
 export CYCLE_START_YEAR=%CYCLE_START_YEAR%
@@ -22,7 +23,7 @@ else
 fi    
 
 BDY_DIR="%INPUT_BASE_DIR%/bdy/M%MEMBER%/%CYCLE_START_YEAR%/"
-TMPDIR="%CALC_BASE_DIR%/M%MEMBER%/H%HINDCAST_YEAR%/c%CYCLE_NUMBER%_%CYCLE_START_DATE%"
+TMPDIR="%CALC_BASE_DIR%/M%MEMBER%/H%HINDCAST_YEAR%/C%CYCLE_NUMBER%_%CYCLE_START_DATE%"
 TMPDIR_BDY=${TMPDIR}/INPUTS/BDY
 STATIC_BDY="%STATIC_BASE_DIR%/bdy"
 BDY_DIR_NEXT_YEAR=${INPUT_BASE_DIR}/bdy/M${MEMBER}/${NEXT_YEAR}/

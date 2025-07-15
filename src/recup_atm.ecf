@@ -5,7 +5,8 @@
 %include <seaclim_common.h>
 
 echo "=== Creating Links for ATM Files ==="
-echo "Member: %MEMBER%"
+echo "Member          : %MEMBER%"
+echo "Hindcast Year   : %HINDCAST_YEAR%"
 echo "Cycle Start Date: %CYCLE_START_DATE%"
 
 export CYCLE_START_YEAR=%CYCLE_START_YEAR%
@@ -22,7 +23,7 @@ else
 fi    
 
 ATM_DIR="%INPUT_BASE_DIR%/atm/M%MEMBER%/%CYCLE_START_YEAR%/"
-TMPDIR="%CALC_BASE_DIR%/M%MEMBER%/H%HINDCAST_YEAR%/c%CYCLE_NUMBER%_%CYCLE_START_DATE%"
+TMPDIR="%CALC_BASE_DIR%/M%MEMBER%/H%HINDCAST_YEAR%/C%CYCLE_NUMBER%_%CYCLE_START_DATE%"
 TMPDIR_ATM=${TMPDIR}/INPUTS/ATM
 STATIC_ATM="%STATIC_BASE_DIR%/atm"
 ATM_DIR_NEXT_YEAR=${INPUT_BASE_DIR}/atm/M${MEMBER}/${NEXT_YEAR}/
@@ -47,7 +48,7 @@ recup_atm:
     for the specific month cycle and the subsequent month. The folder is also
     filled with weights files and reference mslp timeseries.
     for cycle 19931201 is:
-    runs/M000/H1993/c01_19931201/INPUTS/ATM/
+    runs/M000/H1993/C01_19931201/INPUTS/ATM/
         ERA5_BULKHUMI_1H_y1993m12.nc
         ERA5_BULKHUMI_1H_y1994m01.nc
         ERA5_BULKTAIR_1H_y1993m12.nc

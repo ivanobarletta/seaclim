@@ -1,0 +1,69 @@
+#!/bin/bash
+%include <scheduler/slurm_login210-19.h>
+
+%include <header/head_slurm.h>
+%include <seaclim_common.h>
+
+echo "=== Creating Links to RST Files ==="
+echo "Member          : %MEMBER%"
+echo "Hindcast Year   : %HINDCAST_YEAR%"
+echo "Cycle Start Date: %CYCLE_START_DATE%"
+
+export CYCLE_START_YEAR=%CYCLE_START_YEAR%
+export CYCLE_START_MONTH=%CYCLE_START_MONTH%
+export CYCLE_START_DATE=%CYCLE_START_DATE%
+export RESTART_BASE_DIR=%RESTART_BASE_DIR%
+export MEMBER=%MEMBER%
+export CALC_BASE_DIR=%CALC_BASE_DIR%
+export HINDCAST_YEAR=%HINDCAST_YEAR%
+export CYCLE_NUMBER=%CYCLE_NUMBER%
+
+TMPDIR_CI=${CALC_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}/CI
+
+echo "Cycle number is: ${CYCLE_NUMBER}"
+
+if [ ${CYCLE_NUMBER} -eq "00" ]; then
+    # link single file from glo multi-year
+    RESTART_FOLDER=${RESTART_BASE_DIR}/INIT
+    echo "Searching restarts in folder:"
+    echo ${RESTART_FOLDER}
+    /bin/ln -sf ${RESTART_FOLDER}/INIT/restart_oce_${CYCLE_START_DATE}.nc ${TMPDIR_CI}
+else
+    # cycles >= 01
+    # link rst files from previous cycle
+    CYCLE_NUMBER_M1=$(previous_cycle ${CYCLE_NUMBER})
+    RESTART_FOLDER=${RESTART_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER_M1}_${CYCLE_START_DATE_PREVIOUS}
+    echo "Searching restarts in folder:"
+    echo ${RESTART_FOLDER}
+    /bin/ln -sf ${RESTART_FOLDER}/*eNEATL12_*????.nc ${TMPDIR_CI}
+fi
+
+echo "Linking RST completed"
+
+%manual
+recup_rst:
+    fills the CI/ folder in the local run working directory 
+    if the cycle number is 00 the files are taken from 
+        RESTART_BASE_DIR/INIT/restart_oce_????1101.nc 
+    otherwise are takens according to the member, hindcast year and previous cycle 
+
+    cycle_00 (19931101 -> 19931201) procudes restart:
+	000eNEATL12_H1993_C00_restart_oce_0000.nc
+
+    the cycle_00 will create the folder:
+	    restart/M000/H1993/C00_19931101/
+    to store its restart:
+	    000eNEATL12_H1993_C00_restart_oce_0000.nc
+
+    cycle_01 (19931201 -> 19940101) will search for:
+	    restart/M000/H1993/C00_19931101/
+		    000eNEATL12_H1993_C00_restart_oce_0000.nc
+
+    This way the cycle_{m} (for m>00) will search in the folder of cycle_{m-1}, that has
+    been already created.
+
+    cycle 00 will search in the folder:
+	    restart/INIT/
+%end
+
+%include <header/tail_slurm.h>
