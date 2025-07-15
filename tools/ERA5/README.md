@@ -19,7 +19,7 @@ usage
         year/month
 
     to store the output files. You have to either create the folders
-    of corresponding years/months you wanto to download or you 
+    of corresponding years/months you want to download or you 
     modify the script to download all the files in the same folder.
 
 
