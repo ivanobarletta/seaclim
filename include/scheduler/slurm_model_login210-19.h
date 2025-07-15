@@ -1,12 +1,11 @@
-#SBATCH -J %TASK%.%ECF_TRYNO%-%MOI_expnam%-%MOI_dstop%
-#SBATCH --reservation=%node_reservation%
-#SBATCH -N %nodes%
-#SBATCH -n %MOI_model_total_ntasks%
-#SBATCH --ntasks-per-node=%procs_node%
+#SBATCH -J %TASK%.M%MEMBER%.H%HINDCAST_YEAR%.c%CYCLE_NUMBER%.%ECF_TRYNO%
+#SBATCH --output=%LOG_BASE_DIR%/M%MEMBER%/H%HINDCAST_YEAR%/C%CYCLE_NUMBER%_%CYCLE_START_DATE%/%TASK%.M%MEMBER%.hindcast_%HINDCAST_YEAR%.cycle_%CYCLE_NUMBER%.%ECF_DATE%-%TIME%.%ECF_TRYNO%.out
+#SBATCH --error=%LOG_BASE_DIR%/M%MEMBER%/H%HINDCAST_YEAR%/C%CYCLE_NUMBER%_%CYCLE_START_DATE%/%TASK%.M%MEMBER%.hindcast_%HINDCAST_YEAR%.cycle_%CYCLE_NUMBER%.%ECF_DATE%-%TIME%.%ECF_TRYNO%.err
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=1
 #SBATCH --time=%run_time%
-#SBATCH --mem=240G
-#SBATCH --exclusive
+#SBATCH --mem=100G
 #SBATCH --no-requeue
-#SBATCH --mail-type=%mail_if:NONE%
-#SBATCH --mail-user=%mail_acct:roland.aznar@nowsystems.eu%
+#SBATCH --mail-type=FAIL,END
+#SBATCH --mail-user=ivano.barletta@nowsystems.eu
 export JOB_ID=${SLURM_JOBID}
