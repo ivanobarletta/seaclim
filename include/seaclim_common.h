@@ -25,12 +25,15 @@ sed_namelist () {
     new_nml=$2
 
     SED_REPLACEMENTS=(
-    "s/{MEMBER}/${MEMBER}/g"   
-    "s/{HINDCAST_YEAR}/${HINDCAST_YEAR}/g"
-    "s/{CYCLE_NUMBER}/${CYCLE_NUMBER}/g"             
     "s/{NN_IT000}/${NN_IT000}/g"
     "s/{NN_ITEND}/${NN_ITEND}/g"
     "s/{NN_DATE0}/${NN_DATE0}/g"
+    "s/{HINDCAST_START_DATE}/${HINDCAST_START_DATE}/g"
+    "s/{MEMBER}/${MEMBER}/g"   
+    "s/{HINDCAST_YEAR}/${HINDCAST_YEAR}/g"
+    "s/{CYCLE_NUMBER}/${CYCLE_NUMBER}/g" 
+    "s/{CYCLE_NUMBER_M1}/${CYCLE_NUMBER_M1}/g" 
+    "s/{START_MONTH_DAY}/${START_MONTH_DAY}/g"
     )
 
     SED_ARGS=""
@@ -94,7 +97,14 @@ next_cycle() {
     printf "%%02d\n" "${next_cycle}"
 }
 
+launchmpi () {
+ OPT1=''
+ local "${@}"
+ srun --ntasks=${NUMCPU1} --ntasks-per-node=${NUMPERNODE1} ${EXE1} ${OPT1}
+}
+
+
 
 # Set common environment
-export LANG=C
-export LC_ALL=C
+#export LANG=C
+#export LC_ALL=C
