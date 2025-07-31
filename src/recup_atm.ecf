@@ -22,23 +22,52 @@ else
     NEXT_YEAR=${CYCLE_START_YEAR}
 fi    
 
-ATM_DIR="%INPUT_BASE_DIR%/atm/M%MEMBER%/%CYCLE_START_YEAR%/"
+ATM_DIR="%INPUT_BASE_DIR%/atm/M%MEMBER%/%CYCLE_START_YEAR%/%CYCLE_START_MONTH%"
 TMPDIR="%CALC_BASE_DIR%/M%MEMBER%/H%HINDCAST_YEAR%/C%CYCLE_NUMBER%_%CYCLE_START_DATE%"
 TMPDIR_ATM=${TMPDIR}/INPUTS/ATM
 STATIC_ATM="%STATIC_BASE_DIR%/atm"
-ATM_DIR_NEXT_YEAR=${INPUT_BASE_DIR}/atm/M${MEMBER}/${NEXT_YEAR}/
+ATM_DIR_NEXT_MONTH=${INPUT_BASE_DIR}/atm/M${MEMBER}/${NEXT_YEAR}/${NEXT_MONTH}/
 
 echo "linking files from: ${ATM_DIR}"
-echo "to: ${TMPDIR_ATM}"
+echo "                to: ${TMPDIR_ATM}"
 
 # force creation of soft link  
-/bin/ln -sf ${ATM_DIR}/ERA5_*y${CYCLE_START_YEAR}m${CYCLE_START_MONTH}.nc ${TMPDIR_ATM}
+if /bin/find ${ATM_DIR} -type f | read; then
+    /bin/ln -sf ${ATM_DIR}/ERA5_*_3H_y${CYCLE_START_YEAR}m${CYCLE_START_MONTH}.nc ${TMPDIR_ATM}
+else    
+    echo "Error. Folder ${ATM_DIR} is empty"
+    exit 1
+fi
 
-# link also data of follwing month
-/bin/ln -sf ${ATM_DIR_NEXT_YEAR}/ERA5_*y${NEXT_YEAR}m${NEXT_MONTH}.nc ${TMPDIR_ATM}
+echo "linking files from: ${ATM_DIR_NEXT_MONTH}"
+echo "to: ${TMPDIR_ATM}"
+
+# link also data of following month
+if /bin/find ${ATM_DIR_NEXT_MONTH} -type f | read; then 
+    /bin/ln -sf ${ATM_DIR_NEXT_MONTH}/ERA5_*_3H_y${NEXT_YEAR}m${NEXT_MONTH}.nc ${TMPDIR_ATM}
+else 
+    echo "Error. Folder ${ATM_DIR_NEXT_MONTH} is empty"
+    exit 1
+fi
 
 # create soft links for atm static files
-/bin/ln -sf ${STATIC_ATM}/*nc ${TMPDIR_ATM}
+if /bin/find ${STATIC_ATM} -type f | read; then 
+    /bin/ln -sf ${STATIC_ATM}/*nc ${TMPDIR_ATM}
+else    
+    echo "Error. Folder ${STATIC_ATM} is empty"
+    exit 1
+fi
+
+# reference pressure 
+PREF_DIR="%INPUT_BASE_DIR%/atm/M%MEMBER%/%CYCLE_START_YEAR%/"
+PREF_FILE="${PREF_DIR}/pref_series_3H_y${CYCLE_START_YEAR}.nc"
+
+if [ -f ${PREF_FILE} ]; then 
+    /bin/ln -sf ${PREF_FILE} ${TMPDIR_ATM}
+else 
+    echo "Error. File ${PREF_FILE} not found"
+    exit 1
+fi
 
 echo "Linking ATM completed"
 
@@ -48,7 +77,7 @@ recup_atm:
     for the specific month cycle and the subsequent month. The folder is also
     filled with weights files and reference mslp timeseries.
     for cycle 19931201 is:
-    runs/M000/H1993/C01_19931201/INPUTS/ATM/
+    runs/M000/H1993/C02_19931201/INPUTS/ATM/ #(filenames are example, might be different)
         ERA5_BULKHUMI_1H_y1993m12.nc
         ERA5_BULKHUMI_1H_y1994m01.nc
         ERA5_BULKTAIR_1H_y1993m12.nc
@@ -68,6 +97,30 @@ recup_atm:
         pref_series_y1993.nc
         weights_bicubic.nc
         weights_bilinear.nc
+
+    The input files are expected to be organized in the 
+    source directories as:
+
+    INPUT_BASE_DIR/
+        atm/
+            M000/
+                1993/
+                    11/
+                        ERA5_BULKTAIR_1H_y1993m11.nc
+                        ERA5_BULKHUMI_1H_y1993m11.nc          
+                        ...
+                    12/
+                    ...
+                1994/
+                    01/
+                    02/
+                    ...
+                2019/
+                    01/
+                    02/
+                    ...             
+            M001/ 
+            ...    
 %end
 
 %include <header/tail_slurm.h>

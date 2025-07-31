@@ -1,0 +1,52 @@
+#!/bin/bash
+%include <scheduler/slurm_model_login210-19.h>
+
+%include <header/head_slurm.h>
+%include <seaclim_common.h>
+
+export CALC_BASE_DIR=%CALC_BASE_DIR%
+export MEMBER=%MEMBER%
+export HINDCAST_YEAR=%HINDCAST_YEAR%
+export CYCLE_NUMBER=%CYCLE_NUMBER%
+export CYCLE_START_DATE=%CYCLE_START_DATE%
+
+# create the folder and cd into it
+TMPDIR=${CALC_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}
+
+cd ${TMPDIR}                        # move into tmp workinfg folder
+
+# modules 
+module --force purge
+module load ibi/2021
+module load intel/2021.2.0
+module load iimpi/2021.2.0
+module load netcdf-fortran/4.5.3
+module load imkl/2021.2.0
+module load ucx/1.11.2
+
+export NBPROC_NEMO=%NPROCS_NEMO%
+export NBPROC_XIOS=%NPROCS_XIOS%
+NBPROC_TOT=$((NBPROC_NEMO+NBPROC_XIOS))
+
+export nemoEXE=%NEMOEXE%
+export xiosEXE=%XIOSEXE%
+
+MULTIPROG_CONF=config_file
+
+cat > ${MULTIPROG_CONF} <<EOF
+0-$((NBPROC_NEMO-1)) ${nemoEXE}
+${NBPROC_NEMO}-$((NBPROC_NEMO+NBPROC_XIOS-1)) ${xiosEXE}
+EOF
+
+time srun --cpu_bind=cores --mpi=pmi2 -K1 -m cyclic -n ${NBPROC_TOT} --multi-prog ${MULTIPROG_CONF}
+
+
+%manual
+Model run:    
+    1) move to calc directory 
+    2) load modules
+    3) create multi_program configuration file
+    4) run model
+%end
+
+%include <header/tail_slurm.h>

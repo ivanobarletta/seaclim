@@ -1,0 +1,90 @@
+#!/bin/bash
+%include <scheduler/slurm_merge_login210-19.h>
+
+%include <header/head_slurm.h>
+%include <seaclim_common.h>
+
+echo "=== Merging output files ==="
+echo "Member          : %MEMBER%"
+echo "Hindcast Year   : %HINDCAST_YEAR%"
+echo "Cycle Start Date: %CYCLE_START_DATE%"
+
+export CALC_BASE_DIR=%CALC_BASE_DIR%
+export MEMBER=%MEMBER%
+export HINDCAST_YEAR=%HINDCAST_YEAR%
+export CYCLE_NUMBER=%CYCLE_NUMBER%
+export CYCLE_START_DATE=%CYCLE_START_DATE%
+export MERGEMPI_EXE=%MERGEMPI_EXE%
+export DOMAIN_FILE=%STATIC_BASE_DIR%/ocean/domain_cfg_init.nc
+export OUTPUT_BASE_DIR=%OUTPUT_BASE_DIR%
+export NPROCS_MERGE=%NPROCS_MERGE%
+
+PROGNAM="mergefile_mpi.exe"
+
+# modules 
+module --force purge
+module load ibi/2021
+module load intel/2021.2.0
+module load iimpi/2021.2.0
+module load netcdf-fortran/4.5.3
+module load imkl/2021.2.0
+module load ucx/1.11.2
+
+# define local output folder and cd into it
+TMPDIR=${CALC_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}/OUTPUTS
+
+# cd into calc folder
+cd ${TMPDIR}
+
+# link merge exe and domain for coordinates
+ln -sf ${MERGEMPI_EXE} ${PROGNAM}
+ln -sf ${DOMAIN_FILE} coordinates.nc
+
+# list of files to rebuild
+flist=$(ls *_0000.nc | grep -v "0DT")   # do not consider 0DT fles
+
+launchmpi NUMCPU1=${NPROCS_MERGE} NUMPERNODE1=${NPROCS_MERGE} EXE1="./${PROGNAM}" OPT1="-f $flist -c coordinates.nc"
+
+rbld_ok=$?
+
+# Rename 0DT
+echo "renaming 0DT files"
+file_0DT=$(ls *0DT*_0000.nc 2>/dev/null || true)
+if [ ! -z "$file_0DT" ]; then   # check if the string is null or empty
+   for ff in $file_0DT; do
+      /bin/mv ${ff} ${ff%%_*}.nc
+   done
+fi
+
+# Remove original files-per-proc
+if [ $rbld_ok -eq 0 ]; then
+    echo "rebuild was ok"
+    echo "removing splitted files"
+    flist=$(ls *_????.nc)
+    /bin/rm -f $flist
+fi
+#
+
+# create output directory
+OUT_DIR_NC=${OUTPUT_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}/NC
+mkdir -p ${OUT_DIR_NC}
+
+# move outputs in output directory
+/bin/mv ${MEMBER}eNEATL12_*nc ${OUT_DIR_NC}
+
+# move ocean.output, timing ... in data folder 
+OUT_DIR_DATA=${OUTPUT_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}/DATA
+mkdir -p ${OUT_DIR_DATA}
+
+/bin/mv ocean.output  ${OUT_DIR_DATA}
+/bin/mv timing.output ${OUT_DIR_DATA}
+/bin/mv output.namelist.dyn ${OUT_DIR_DATA}
+
+%manual
+Prepare run:
+    1) Merge files using mergefile_mpi.exe 
+    2) create output directory
+    3) move output files to output directory
+%end
+
+%include <header/tail_slurm.h>

@@ -14,9 +14,12 @@ export MEMBERS=%MEMBERS%
 export HINDCAST_YEAR1=%HINDCAST_YEAR1%      # 1993
 export HINDCAST_YEAR2=%HINDCAST_YEAR2%      # 2019
 export CYCLES=%CYCLES%                      # 62
+export START_MONTH_DAY=%START_MONTH_DAY%    # 1101 (0101 for some tests)
+
+MONTH00=${START_MONTH_DAY:0:2}              # grab month from start_month_day (should be 11, 01 for some tests)
 
 MEMBERSm1=$(( MEMBERS - 1 ))
-CYCLESm1=$(( CYCLES - 1 ))
+#CYCLESm1=$(( CYCLES - 1 ))
 
 cd ${LOG_BASE_DIR}
 
@@ -26,13 +29,14 @@ for mem in $(seq -f "%%03g" 0 ${MEMBERSm1}); do                      # loop over
     cd M${mem}
     for year in `seq ${HINDCAST_YEAR1} ${HINDCAST_YEAR2}`; do                         # loop over years
         echo "hindcast year: ${year}"
-        mkdir -p H$year                                             # H1993,H1994 (create dir if not existing)
-        cd H$year    
-        for cycle in $(seq -f "%%02g" 0 ${CYCLESm1}); do             # loop over months
+        mkdir -p H${year}                                             # H1993,H1994 (create dir if not existing)
+        cd H${year}    
+        for cycle in $(seq -f "%%02g" 1 ${CYCLES}); do             # loop over months
             echo "cycle: ${cycle}"
-            start_date=$(date -d "${year}-11-01 +${cycle} months" +%%Y%%m%%d)
+            cyclem1=$(( cycle - 1 ))
+            start_date=$(date -d "${year}-${MONTH00}-01 +${cyclem1} months" +%%Y%%m%%d)
 
-            mkdir -p C${cycle}_${start_date}                                      # C00_19931101,C01_19931201.. (create if not existing)
+            mkdir -p C${cycle}_${start_date}                                      # C01_YYYYmmdd,C02_YYYYmmdd.. (create if not existing)
         done
         cd ..
     done
@@ -43,44 +47,44 @@ done
 Create logs folders structure
     M000/
         H1993/
-            c00_19931101/
-            c01_19931201/
-            c02_19940101/
+            c01_19931101/
+            c02_19931201/
+            c03_19940101/
             ..
-            c61_19981201/
+            c62_19981201/
         H1994     
-            c00_19941101/
-            c01_19941201/
-            c02_19950101/
+            c01_19941101/
+            c02_19941201/
+            c03_19950101/
             ..
-            c61_19991201/
+            c62_19991201/
         ..     
         H2019
-            c00_20191101/
-            c01_20191201/
-            c02_20200101/
+            c01_20191101/
+            c02_20191201/
+            c03_20200101/
             ..
-            c61_20241201/
+            c62_20241201/
     M001/ 
         H1993/
-            c00_19931101/
-            c01_19931201/
-            c02_19940101/
+            c01_19931101/
+            c02_19931201/
+            c03_19940101/
             ..
-            c61_19981201/
+            c62_19981201/
         H1994     
-            c00_19941101/
-            c01_19941201/
-            c02_19950101/
+            c01_19941101/
+            c02_19941201/
+            c03_19950101/
             ..
-            c61_19991201/
+            c62_19991201/
         ..     
         H2019
-            c00_20191101/
-            c01_20191201/
-            c02_20200101/
+            c01_20191101/
+            c02_20191201/
+            c03_20200101/
             ..
-            c61_20241201/
+            c62_20241201/
     ...          
 %end
 

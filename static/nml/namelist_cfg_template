@@ -44,11 +44,11 @@
       !                          !    = 0 nn_date0 read in namelist ; nn_it000 : read in namelist
       !                          !    = 1 nn_date0 read in namelist ; nn_it000 : check consistancy between namelist and restart
       !                          !    = 2 nn_date0 read in restart  ; nn_it000 : check consistancy between namelist and restart
-      cn_ocerst_in    = "CI/eNEATL12_restart_oce" !  suffix of ocean restart name (input) 
+      cn_ocerst_in    = "restart_oce" !  suffix of ocean restart name (input) 
                                                   ! IVB (the suffix in the namelist remains the same. in the CI 
                                                   ! folder this will be used to point to the actual file through links.) 
-      cn_ocerst_indir = "./" !  directory from which to read input ocean restarts
-      cn_ocerst_out   = "{MEMBER}eNEATL12_H{HINDCAST_YEAR}_C{CYCLE_NUMBER}_restart_oce" !  suffix of ocean restart name (output)
+      cn_ocerst_indir = "./CI/" !  directory from which to read input ocean restarts
+      cn_ocerst_out   = "restart_oce" !  suffix of ocean restart name (output)
       cn_ocerst_outdir =  "RESTART/" !  directory in which to write output ocean restarts
    nn_istate   =       0   !  output the initial state (1) or not (0)
    ln_rst_list = .false.   !  output restarts at list of times using nn_stocklist (T) or at set frequency with nn_stock (F)
@@ -206,15 +206,15 @@
    !___________!_________________________!___________________!___________!_____________!________!___________!______________________________________!__________!_______________!
    !           !  file name              ! frequency (hours) ! variable  ! time interp.!  clim  ! 'yearly'/ !       weights filename               ! rotation ! land/sea mask !
    !           !                         !  (if <0  months)  !   name    !   (logical) !  (T/F) ! 'monthly' !                                      ! pairing  !    filename   !
-   sn_wndi     = 'ERA5_BULKU10M_1H'       ,        1.        , '-u10'    ,   .true.    , .false., 'monthly' , 'weights_bicubic.nc'                 ,   'U10'  ,      ''
-   sn_wndj     = 'ERA5_BULKV10M_1H'       ,        1.        , '-v10'    ,   .true.    , .false., 'monthly' , 'weights_bicubic.nc'                 ,   'V10'  ,      ''
-   sn_qsr      = 'ERA5_FLUXSSRD_1H'       ,        1.        , 'ssrd'    ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
-   sn_qlw      = 'ERA5_FLUXSTRD_1H'       ,        1.        , 'strd'    ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
-   sn_tair     = 'ERA5_BULKTAIR_1H'       ,        1.        , '-t2m'    ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
-   sn_humi     = 'ERA5_BULKHUMI_1H'       ,        1.        , '-q2m'    ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
-   sn_prec     = 'ERA5_FLUXPRE_1H'        ,        1.        ,   'tp'    ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_wndi     = 'ERA5_BULKU10_3H'        ,        3.        , 'u10'     ,   .true.    , .false., 'monthly' , 'weights_bicubic.nc'                 ,   'U10'  ,      ''
+   sn_wndj     = 'ERA5_BULKV10_3H'        ,        3.        , 'v10'     ,   .true.    , .false., 'monthly' , 'weights_bicubic.nc'                 ,   'V10'  ,      ''
+   sn_qsr      = 'ERA5_FLUXSSRD_3H'       ,        3.        , 'ssrd'    ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_qlw      = 'ERA5_FLUXSTRD_3H'       ,        3.        , 'strd'    ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_tair     = 'ERA5_BULKTAIR_3H'       ,        3.        , 't2m'     ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_humi     = 'ERA5_BULKHUMI_3H'       ,        3.        , 'q2m'     ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_prec     = 'ERA5_FLUXPRE_3H'        ,        3.        , 'tp'      ,   .false.   , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
    sn_snow     = 'NOT USED'               ,      -12.        , 'snow'    ,   .false.   , .true. , 'monthly',            ''                         ,     ''   ,      ''
-   sn_slp      = 'ERA5_MSLP_1H'           ,        1.        , '-msl'    ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
+   sn_slp      = 'ERA5_MSLP_3H'           ,        3.        , 'msl'     ,   .true.    , .false., 'monthly' , 'weights_bilinear.nc'                ,     ''   ,      ''
    sn_cc       = 'NOT USED'              , 24.               , 'CC'       , .false.    , .true. , 'yearly'  , 'weights_core_orca2_bilinear_noc.nc'  , ''      , ''
    sn_hpgi     = 'NOT USED'              , 24.               , 'uhpg'     , .false.    , .false., 'monthly' , ''                                    , 'UG'    , ''
    sn_hpgj     = 'NOT USED'              , 24.               , 'vhpg'     , .false.    , .false., 'monthly' , ''                                    , 'VG'    , ''
@@ -286,7 +286,7 @@
 !-----------------------------------------------------------------------
 &namsbc_apr    !   Atmospheric pressure used as ocean forcing           (ln_apr_dyn =T)
 !-----------------------------------------------------------------------
-   rn_pref     = 100970.   !  reference atmospheric pressure   [N/m2]/
+   rn_pref     = 100970.   !  reference atmolsspheric pressure   [N/m2]/
    nn_ref_apr  =   2       !  ref. pressure: 0: constant, 1: global mean or 2: read in a file
    ln_apr_obc  = .true.    !  inverse barometer added to OBC ssh data
 
@@ -294,8 +294,8 @@
    !___________!_________________________!___________________!___________!_____________!________!___________!__________________!__________!_______________!
    !           !  file name              ! frequency (hours) ! variable  ! time interp.!  clim  ! 'yearly'/ ! weights filename ! rotation ! land/sea mask !
    !           !                         !  (if <0  months)  !   name    !   (logical) !  (T/F) ! 'monthly' !                  ! pairing  !    filename   !
-   sn_apr      = 'ERA5_MSLP_1H'          ,         1         ,   '-msl'  ,   .true.    , .false.,  'monthly', 'weights_bilinear.nc', ''   ,       ''
-   sn_apref    =   'pref_series'         ,         1         ,   '-msl'  ,   .true.    , .false.,  'yearly' ,         ''           , ''   ,       ''
+   sn_apr      = 'ERA5_MSLP_3H'          ,         3         ,   'msl'   ,   .true.    , .false.,  'monthly', 'weights_bilinear.nc', ''   ,       ''
+   sn_apref    = 'pref_series_3H'        ,         3         ,   'msl'   ,   .true.    , .false.,  'yearly' ,         ''           , ''   ,       ''
 /
 !-----------------------------------------------------------------------
 &namisf       !  Top boundary layer (ISF)                               (default: OFF)
@@ -457,11 +457,11 @@
    !___________!_________________________!___________________!___________!_____________!________!___________!__________________!__________!_______________!
    !           !  file name              ! frequency (hours) ! variable  ! time interp.!  clim  ! 'yearly'/ ! weights filename ! rotation ! land/sea mask !
    !           !                         !  (if <0  months)  !   name    !   (logical) !  (T/F) ! 'monthly' !                  ! pairing  !    filename   !
-   bn_ssh =     'eNEATL12_obcdta_south_1',         24        , 'sossheig',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_u3d  =    'eNEATL12_obcdta_south_1',         24        , 'vozocrtx',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_v3d  =    'eNEATL12_obcdta_south_1',         24        , 'vomecrty',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_tem  =    'eNEATL12_obcdta_south_1',         24        , 'votemper',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_sal  =    'eNEATL12_obcdta_south_1',         24        , 'vosaline',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_ssh  =    'eNEATL12_obcdta_south_1',         24        ,   'ssh'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_u3d  =    'eNEATL12_obcdta_south_1',         24        ,    'uo'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_v3d  =    'eNEATL12_obcdta_south_1',         24        ,    'vo'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_tem  =    'eNEATL12_obcdta_south_1',         24        ,  'thetao' ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_sal  =    'eNEATL12_obcdta_south_1',         24        ,    'so'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
    bn_dic  =    'eNEATL36_obcdta_south_1_BIO'   ,168   ,      'dic' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
    bn_tal  =    'eNEATL36_obcdta_south_1_BIO'   ,168   ,      'alk' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
    bn_oxy  =    'eNEATL36_obcdta_south_1_BIO'   ,168   ,       'o2' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
@@ -499,11 +499,11 @@
    !___________!_________________________!___________________!___________!_____________!________!___________!__________________!__________!_______________!
    !           !  file name              ! frequency (hours) ! variable  ! time interp.!  clim  ! 'yearly'/ ! weights filename ! rotation ! land/sea mask !
    !           !                         !  (if <0  months)  !   name    !   (logical) !  (T/F) ! 'monthly' !                  ! pairing  !    filename   !
-   bn_ssh =     'eNEATL12_obcdta_south_2',         24        , 'sossheig',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_u3d  =    'eNEATL12_obcdta_south_2',         24        , 'vozocrtx',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_v3d  =    'eNEATL12_obcdta_south_2',         24        , 'vomecrty',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_tem  =    'eNEATL12_obcdta_south_2',         24        , 'votemper',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_sal  =    'eNEATL12_obcdta_south_2',         24        , 'vosaline',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_ssh  =    'eNEATL12_obcdta_south_2',         24        ,   'ssh'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_u3d  =    'eNEATL12_obcdta_south_2',         24        ,    'uo'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_v3d  =    'eNEATL12_obcdta_south_2',         24        ,    'vo'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_tem  =    'eNEATL12_obcdta_south_2',         24        ,  'thetao' ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_sal  =    'eNEATL12_obcdta_south_2',         24        ,    'so'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
    bn_dic  =    'eNEATL36_obcdta_south_2_BIO'   ,168   ,      'dic' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
    bn_tal  =    'eNEATL36_obcdta_south_2_BIO'   ,168   ,      'alk' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
    bn_oxy  =    'eNEATL36_obcdta_south_2_BIO'   ,168   ,       'o2' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
@@ -541,11 +541,11 @@
    !___________!_________________________!___________________!___________!_____________!________!___________!__________________!__________!_______________!
    !           !  file name              ! frequency (hours) ! variable  ! time interp.!  clim  ! 'yearly'/ ! weights filename ! rotation ! land/sea mask !
    !           !                         !  (if <0  months)  !   name    !   (logical) !  (T/F) ! 'monthly' !                  ! pairing  !    filename   !
-   bn_ssh =     'eNEATL12_obcdta_west'   ,         24        , 'sossheig',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_u3d  =    'eNEATL12_obcdta_west'   ,         24        , 'vozocrtx',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_v3d  =    'eNEATL12_obcdta_west'   ,         24        , 'vomecrty',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_tem  =    'eNEATL12_obcdta_west'   ,         24        , 'votemper',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_sal  =    'eNEATL12_obcdta_west'   ,         24        , 'vosaline',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_ssh  =    'eNEATL12_obcdta_west'   ,         24        ,   'ssh'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_u3d  =    'eNEATL12_obcdta_west'   ,         24        ,    'uo'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_v3d  =    'eNEATL12_obcdta_west'   ,         24        ,    'vo'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_tem  =    'eNEATL12_obcdta_west'   ,         24        ,  'thetao' ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_sal  =    'eNEATL12_obcdta_west'   ,         24        ,    'so'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
    bn_dic  =    'eNEATL36_obcdta_west_BIO'    ,168   ,      'dic' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
    bn_tal  =    'eNEATL36_obcdta_west_BIO'    ,168   ,      'alk' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
    bn_oxy  =    'eNEATL36_obcdta_west_BIO'    ,168   ,       'o2' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
@@ -583,11 +583,11 @@
    !___________!_________________________!___________________!___________!_____________!________!___________!__________________!__________!_______________!
    !           !  file name              ! frequency (hours) ! variable  ! time interp.!  clim  ! 'yearly'/ ! weights filename ! rotation ! land/sea mask !
    !           !                         !  (if <0  months)  !   name    !   (logical) !  (T/F) ! 'monthly' !                  ! pairing  !    filename   !
-   bn_ssh =     'eNEATL12_obcdta_north'  ,         24        , 'sossheig',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_u3d  =    'eNEATL12_obcdta_north'  ,         24        , 'vozocrtx',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_v3d  =    'eNEATL12_obcdta_north'  ,         24        , 'vomecrty',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_tem  =    'eNEATL12_obcdta_north'  ,         24        , 'votemper',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_sal  =    'eNEATL12_obcdta_north'  ,         24        , 'vosaline',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_ssh  =    'eNEATL12_obcdta_north'  ,         24        ,   'ssh'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_u3d  =    'eNEATL12_obcdta_north'  ,         24        ,    'uo'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_v3d  =    'eNEATL12_obcdta_north'  ,         24        ,    'vo'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_tem  =    'eNEATL12_obcdta_north'  ,         24        ,  'thetao' ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_sal  =    'eNEATL12_obcdta_north'  ,         24        ,    'so'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
    bn_dic  =    'eNEATL36_obcdta_north_BIO'   ,168   ,      'dic' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
    bn_tal  =    'eNEATL36_obcdta_north_BIO'   ,168   ,      'alk' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
    bn_oxy  =    'eNEATL36_obcdta_north_BIO'   ,168   ,       'o2' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
@@ -625,11 +625,11 @@
    !___________!_________________________!___________________!___________!_____________!________!___________!__________________!__________!_______________!
    !           !  file name              ! frequency (hours) ! variable  ! time interp.!  clim  ! 'yearly'/ ! weights filename ! rotation ! land/sea mask !
    !           !                         !  (if <0  months)  !   name    !   (logical) !  (T/F) ! 'monthly' !                  ! pairing  !    filename   !
-   bn_ssh =     'eNEATL12_obcdta_east'   ,         24        , 'sossheig',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_u3d  =    'eNEATL12_obcdta_east'   ,         24        , 'vozocrtx',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_v3d  =    'eNEATL12_obcdta_east'   ,         24        , 'vomecrty',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_tem  =    'eNEATL12_obcdta_east'   ,         24        , 'votemper',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
-   bn_sal  =    'eNEATL12_obcdta_east'   ,         24        , 'vosaline',    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_ssh  =    'eNEATL12_obcdta_east'   ,         24        ,   'ssh'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_u3d  =    'eNEATL12_obcdta_east'   ,         24        ,    'uo'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_v3d  =    'eNEATL12_obcdta_east'   ,         24        ,    'vo'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_tem  =    'eNEATL12_obcdta_east'   ,         24        ,  'thetao' ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
+   bn_sal  =    'eNEATL12_obcdta_east'   ,         24        ,    'so'   ,    .true.   , .FALSE., 'daily' ,        ''        ,    ''    ,       ''
    bn_dic  =    'eNEATL36_obcdta_east_BIO'   ,168   ,      'dic' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
    bn_tal  =    'eNEATL36_obcdta_east_BIO'   ,168   ,      'alk' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
    bn_oxy  =    'eNEATL36_obcdta_east_BIO'   ,168   ,       'o2' ,     .true.     , .false. ,   'week_wed'  ,    ''    ,   '' ,   ''
@@ -1165,10 +1165,10 @@
 !-----------------------------------------------------------------------
    ln_sshstr = .false.   ! write the time evolution of the total steric heigth compared to an original state (needs nn_tsref =2)
    ln_tsread = .true.    !  read a TS file for density reference
-   cn_dir    = 'CI/'      !  root directory for the location of the CI files
+   cn_dir    = 'INPUTS/'      !  root directory for the location of the CI files
    !_____ !_________________________!___________________!___________!______________!________!___________!__________!__________!_______________!
    !      !  file name              ! frequency (hours) ! variable  ! time interp. !  clim  ! 'yearly'/ ! weights  ! rotation ! land/sea mask !
    !      !                         !  (if <0  months)  !   name    !   (logical)  !  (T/F) ! 'monthly' ! filename ! pairing  ! filename      !
-   sn_tem =  'restart_19930101.nc'  ,        -12        ,    'tn'   ,    .false.   , .true. ,  'yearly' ,    ''    ,    ''    ,    ''
-   sn_sal =  'restart_19930101.nc'  ,        -12        ,    'sn'   ,    .false.   , .true. ,  'yearly' ,    ''    ,    ''    ,    ''
+   sn_tem =  'restart_{HINDCAST_YEAR}{START_MONTH_DAY}.nc'  ,        -12        ,    'tn'   ,    .false.   , .true. ,  'yearly' ,    ''    ,    ''    ,    ''
+   sn_sal =  'restart_{HINDCAST_YEAR}{START_MONTH_DAY}.nc'  ,        -12        ,    'sn'   ,    .false.   , .true. ,  'yearly' ,    ''    ,    ''    ,    ''
 /

@@ -17,25 +17,58 @@ export MEMBER=%MEMBER%
 export CALC_BASE_DIR=%CALC_BASE_DIR%
 export HINDCAST_YEAR=%HINDCAST_YEAR%
 export CYCLE_NUMBER=%CYCLE_NUMBER%
+export CYCLE_NUMBER_M1=%CYCLE_NUMBER_M1%
+export CYCLE_START_DATE_PREVIOUS=%CYCLE_START_DATE_PREVIOUS%
 
+# local folder where to place the restart to initalize the cycle
 TMPDIR_CI=${CALC_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}/CI
 
-echo "Cycle number is: ${CYCLE_NUMBER}"
+echo "Cycle number is:          ${CYCLE_NUMBER}"
+echo "Previous Cycle number is: ${CYCLE_NUMBER_M1}"
 
-if [ ${CYCLE_NUMBER} -eq "00" ]; then
+if [ ${CYCLE_NUMBER} -eq "01" ]; then
     # link single file from glo multi-year
     RESTART_FOLDER=${RESTART_BASE_DIR}/INIT
     echo "Searching restarts in folder:"
     echo ${RESTART_FOLDER}
-    /bin/ln -sf ${RESTART_FOLDER}/INIT/restart_oce_${CYCLE_START_DATE}.nc ${TMPDIR_CI}
+    RESTART_FILE_OCE=${RESTART_FOLDER}/eNEATL12_restart_oce_${CYCLE_START_DATE}.nc
+    if [ -f ${RESTART_FILE_OCE} ]; then
+        #FILENAME_OCE="${MEMBER}eNEATL12_H${HINDCAST_YEAR}_C${CYCLE_NUMBER_M1}_restart_oce.nc"
+        /bin/ln -sf ${RESTART_FILE_OCE} ${TMPDIR_CI}/restart_oce.nc 
+    else 
+        echo "Error in creating link to restart. File: "
+        echo "${RESTART_FILE_OCE}"
+        echo "not found" 
+        exit 1  
+    fi    
 else
-    # cycles >= 01
-    # link rst files from previous cycle
-    CYCLE_NUMBER_M1=$(previous_cycle ${CYCLE_NUMBER})
+    # cycles >= 02
+    # link rst files from previous cycle (this folder is crea)
     RESTART_FOLDER=${RESTART_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER_M1}_${CYCLE_START_DATE_PREVIOUS}
-    echo "Searching restarts in folder:"
+    echo "Searching restarts from previous cycle in folder:"
     echo ${RESTART_FOLDER}
-    /bin/ln -sf ${RESTART_FOLDER}/*eNEATL12_*????.nc ${TMPDIR_CI}
+    if /bin/find ${RESTART_FOLDER} -type f | read; then 
+        /bin/ln -sf ${RESTART_FOLDER}/???eNEATL12_*????.nc ${TMPDIR_CI} 
+        # rename links to restart_oce_????.nc
+        for file in ${TMPDIR_CI}/*_restart_oce_????.nc; do
+            if [[ -f "$file" ]]; then
+                suffix="${file##*restart_oce_}"
+                new_name="${TMPDIR_CI}/restart_oce_${suffix}"
+                /bin/mv "$file" "$new_name"
+                #echo "Renamed: '$file' -> '$new_name'"
+            fi
+        done
+    else
+        echo "Error: the input restart folder is emtpy"
+        exit 1 
+    fi   
+    export NFILESEXPECTED=%NPROCS_NEMO%
+    NFILESFOUND=$(find ${RESTART_FOLDER} -type f | wc -l)
+    if [  ${NFILESFOUND} -ne ${NFILESEXPECTED} ]; then 
+        echo "Error. The number of restarts found (${NFILESFOUND})"
+        echo "  is different than the number expected (${NFILESEXPECTED})"
+        exit 1
+    fi
 fi
 
 echo "Linking RST completed"
@@ -43,27 +76,28 @@ echo "Linking RST completed"
 %manual
 recup_rst:
     fills the CI/ folder in the local run working directory 
-    if the cycle number is 00 the files are taken from 
-        ${RESTART_BASE_DIR}/INIT/restart_oce_????1101.nc 
+    if the CYCLE number is 01 the files are taken from 
+        ${RESTART_BASE_DIR}/INIT/eNEATL12_restart_oce_????1101.nc 
     otherwise are takens according to the member, hindcast year and previous cycle 
 
-    cycle_00 (19931101 -> 19931201) procudes restart:
-	000eNEATL12_H1993_C00_restart_oce_0000.nc
+    CYCLE_01 (19931101 -> 19931201) procudes restart:
+	000eNEATL12_H1993_C01_restart_oce_0000.nc
 
-    the cycle_00 will create the folder:
-	    ${RESTART_BASE_DIR}/M000/H1993/C00_19931101/
+    the CYCLE_01 will create the folder:
+	    ${RESTART_BASE_DIR}/M000/H1993/C01_19931101/
     to store its restart:
-	    000eNEATL12_H1993_C00_restart_oce_0000.nc
+	    000eNEATL12_H1993_C01_restart_oce_0000.nc
+	    000eNEATL12_H1993_C01_restart_oce_0001.nc
+        ...
 
-    cycle_01 (19931201 -> 19940101) will search for:
-	    ${RESTART_BASE_DIR}/M000/H1993/C00_19931101/
-		    000eNEATL12_H1993_C00_restart_oce_0000.nc
+    CYCLE_02 (19931201 -> 19940101) will search for:
+	    ${RESTART_BASE_DIR}/M000/H1993/C01_19931101/
+		    000eNEATL12_H1993_C01_restart_oce_0000.nc
+          	000eNEATL12_H1993_C01_restart_oce_0001.nc  
 
-    This way the cycle_{m} (for m>00) will search in the folder of cycle_{m-1}, that has
+    This way the CYCLE_{m} (for m>01) will search in the folder of CYCLE_{m-1}, that has
     been already created.
 
-    cycle 00 will search in the folder:
-	    ${RESTART_BASE_DIR}/INIT/
 %end
 
 %include <header/tail_slurm.h>

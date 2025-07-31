@@ -22,20 +22,20 @@ else
     NEXT_YEAR=${CYCLE_START_YEAR}
 fi    
 
-BDY_DIR="%INPUT_BASE_DIR%/bdy/M%MEMBER%/%CYCLE_START_YEAR%/"
+BDY_DIR="%INPUT_BASE_DIR%/bdy/M%MEMBER%/%CYCLE_START_YEAR%/%CYCLE_START_MONTH%"
 TMPDIR="%CALC_BASE_DIR%/M%MEMBER%/H%HINDCAST_YEAR%/C%CYCLE_NUMBER%_%CYCLE_START_DATE%"
 TMPDIR_BDY=${TMPDIR}/INPUTS/BDY
-STATIC_BDY="%STATIC_BASE_DIR%/bdy"
-BDY_DIR_NEXT_YEAR=${INPUT_BASE_DIR}/bdy/M${MEMBER}/${NEXT_YEAR}/
+STATIC_BDY="%STATIC_BASE_DIR%/bdy"  
+BDY_DIR_NEXT_YEAR=${INPUT_BASE_DIR}/bdy/M${MEMBER}/${NEXT_YEAR}/${NEXT_MONTH}
 
 echo "linking files from: ${BDY_DIR}"
 echo "to: ${TMPDIR_BDY}"
 
 # force creation of soft link  
-/bin/ln -sf ${BDY_DIR}/eNEATL12_obcdta_*y${CYCLE_START_YEAR}m${CYCLE_START_MONTH}.nc ${TMPDIR_BDY}
+/bin/ln -sf ${BDY_DIR}/eNEATL12_obcdta_*y${CYCLE_START_YEAR}m${CYCLE_START_MONTH}d??.nc ${TMPDIR_BDY}
 
 # link also data of follwing month
-/bin/ln -sf ${BDY_DIR_NEXT_YEAR}/eNEATL12_obcdta_*y${NEXT_YEAR}m${NEXT_MONTH}.nc ${TMPDIR_BDY}
+/bin/ln -sf ${BDY_DIR_NEXT_YEAR}/eNEATL12_obcdta_*y${NEXT_YEAR}m${NEXT_MONTH}d??.nc ${TMPDIR_BDY}
 
 echo "Linking BDY completed"
 
@@ -44,7 +44,7 @@ recup_atm:
     fills the INPUT/BDY folder in the local run working directory 
     for the specific month cycle and the subsequent month. 
     for cycle 19931201 is:
-    runs/M000/H1993/c01_19931201/INPUTS/BDY/
+    runs/M000/H1993/C01_19931201/INPUTS/BDY/
         eNEATL12_obcdta_east_y1993m12.nc
         eNEATL12_obcdta_east_y1994m01.nc
         eNEATL12_obcdta_north_y1993m12.nc
@@ -55,6 +55,30 @@ recup_atm:
         eNEATL12_obcdta_south_2_y1994m01.nc
         eNEATL12_obcdta_west_y1993m12.nc
         eNEATL12_obcdta_west_y1994m01.nc
+
+    INPUT_BASE_DIR/
+        bdy/
+            M000/
+                1993/
+                    11/
+                        eNEATL12_obcdta_east_y1993m11d01.nc
+                        eNEATL12_obcdta_east_y1993m11d02.nc
+                        ...
+                        eNEATL12_obcdta_south_1_y1993m11d01.nc
+                        eNEATL12_obcdta_south_1_y1993m11d02.nc          
+                        ...
+                    12/
+                    ...
+                1994/
+                    01/
+                    02/
+                    ...
+                2019/
+                    01/
+                    02/
+                    ...             
+            M001/ 
+            ...            
 %end
 
 %include <header/tail_slurm.h>
