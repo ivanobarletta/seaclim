@@ -31,10 +31,9 @@ module load imkl/2021.2.0
 module load ucx/1.11.2
 
 # define local output folder and cd into it
-TMPDIR=${CALC_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}/OUTPUTS
+CALC_DIR=${CALC_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}
 
-# cd into calc folder
-cd ${TMPDIR}
+cd ${CALC_DIR}/OUTPUTS
 
 # link merge exe and domain for coordinates
 ln -sf ${MERGEMPI_EXE} ${PROGNAM}
@@ -63,7 +62,6 @@ if [ $rbld_ok -eq 0 ]; then
     flist=$(ls *_????.nc)
     /bin/rm -f $flist
 fi
-#
 
 # create output directory
 OUT_DIR_NC=${OUTPUT_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}/NC
@@ -71,6 +69,9 @@ mkdir -p ${OUT_DIR_NC}
 
 # move outputs in output directory
 /bin/mv ${MEMBER}eNEATL12_*nc ${OUT_DIR_NC}
+
+# go back to calc dir 
+cd ${CALC_DIR}
 
 # move ocean.output, timing ... in data folder 
 OUT_DIR_DATA=${OUTPUT_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}/DATA
@@ -81,7 +82,7 @@ mkdir -p ${OUT_DIR_DATA}
 /bin/mv output.namelist.dyn ${OUT_DIR_DATA}
 
 %manual
-Prepare run:
+merge move outputs:
     1) Merge files using mergefile_mpi.exe 
     2) create output directory
     3) move output files to output directory
