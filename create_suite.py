@@ -178,7 +178,7 @@ for member in membersList:
 
             task_model_run = cycle_family.add_task(f"model_run")
             task_model_run.add( Trigger ( "recup_rst == complete and recup_atm == complete and recup_bdy == complete" ) )
-            task_model_run.add_variable("run_time",'00:25:00')
+            task_model_run.add_variable("run_time",'00:30:00')
 
             #task_fake_model = cycle_family.add_task(f"fake_model")
             #task_fake_model.add( Trigger ( "recup_atm == complete and recup_bdy == complete" ))
