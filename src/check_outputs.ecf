@@ -1,0 +1,156 @@
+#!/bin/bash
+%include <scheduler/slurm_login210-19.h>
+
+%include <header/head_slurm.h>
+%include <seaclim_common.h>
+
+echo "=== Checking restart and output files ==="
+echo "Member          : %MEMBER%"
+echo "Hindcast Year   : %HINDCAST_YEAR%"
+echo "Cycle Start Date: %CYCLE_START_DATE%"
+
+export ECF_HOST=%ECF_HOST%
+export ECF_PORT=%ECF_PORT%
+export CALC_BASE_DIR=%CALC_BASE_DIR%
+export MEMBER=%MEMBER%
+export HINDCAST_YEAR=%HINDCAST_YEAR%
+export CYCLE_NUMBER=%CYCLE_NUMBER%
+export CYCLE_START_DATE=%CYCLE_START_DATE%
+export OUTPUT_BASE_DIR=%OUTPUT_BASE_DIR%
+export RESTART_BASE_DIR=%RESTART_BASE_DIR%
+export NN_ITEND=%NN_ITEND%
+export NPROCS_NEMO=%NPROCS_NEMO%
+export CYCLE_DAYS=%CYCLE_DAYS%
+export NN_ITEND=%NN_ITEND%
+
+# initialize logical variables
+all_files_exist="true"
+all_restarts_exist="true"
+all_outputs_exist="true"
+
+# RESTARTS
+
+# define directory of restart
+RESTART_OUT_DIR="${RESTART_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}"
+
+echo "Checking restart folder:"
+echo "${RESTART_OUT_DIR}"
+
+if [ -d ${RESTART_OUT_DIR} ]; then  # check existence of folder
+
+    cd ${RESTART_OUT_DIR}
+
+    NN_ITEND_STR=$(printf "%%08d\n" ${NN_ITEND})    # print with leading 0    
+
+    FILES_STRING=${MEMBER}eNEATL12_H${HINDCAST_YEAR}_C${CYCLE_NUMBER}_${NN_ITEND_STR}_restart_oce_????.nc
+
+    NUMBER_RESTARTS_FOUND=$(/bin/ls ${FILES_STRING} | wc -l)    # count the number of restarts found
+
+    # check existence of output catalog
+    CATALOG_NAME="CATALOG_RESTARTS_M${MEMBER}_H${HINDCAST_YEAR}_C${CYCLE_NUMBER}_${CYCLE_START_DATE}"
+
+    if [ -f ${CATALOG_NAME} ]; then
+        while read -r filename size unit; do 
+            echo ${filename}
+            if [[ ! -s "${filename}" ]]; then
+                echo "Missing or empty restart file: $filename"
+                all_restarts_exist=false
+            fi
+        done < ${CATALOG_NAME}
+        NUMBER_RESTARTS_CATALOG=$(/bin/wc -l < ${CATALOG_NAME})  # number of restarts in CATALOG
+        if [ ${NUMBER_RESTARTS_CATALOG} != ${NUMBER_RESTARTS_FOUND} ]; then
+            echo "Warning! The number of restarts found "
+            echo "does not match the number in the catalog"
+            echo "Found in folder : ${NUMBER_RESTARTS_FOUND}"
+            echo "Found in CATALOG: ${NUMBER_RESTARTS_CATALOG}"
+            all_restarts_exist="false"
+        fi
+        if [ ${NUMBER_RESTARTS_FOUND} != ${NPROCS_NEMO} ]; then 
+            echo "Warning! The number of restarts found "
+            echo "does not match the number NPROCS_NEMO"
+            echo "Found in folder : ${NUMBER_RESTARTS_FOUND}"
+            echo "NPROCS_NEMO     : ${NPROCS_NEMO}"
+            all_restarts_exist="false"
+        fi
+    else
+        echo "Catalog:"
+        echo "${CATALOG_NAME}"
+        echo "does not exist"
+        all_restarts_exist="false"
+    fi    
+else 
+    echo "Restart folder:"
+    echo "${RESTART_OUT_DIR}"
+    echo "not existing"
+    all_restarts_exist="false"
+fi 
+
+# OUTPUTS
+
+OUT_DIR_NC=${OUTPUT_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}/NC
+
+# cd into folder
+
+numfiles=0
+
+if [ -d ${OUT_DIR_NC} ]; then  
+
+    cd ${OUT_DIR_NC}
+
+    # check existence of output catalog
+    CATALOG_NAME="CATALOG_OUTPUTS_M${MEMBER}_H${HINDCAST_YEAR}_C${CYCLE_NUMBER}_${CYCLE_START_DATE}"
+
+    if [ -f ${CATALOG_NAME} ]; then
+        while read -r filename size unit; do 
+            echo ${filename}
+            if [[ ! -s "${filename}" ]]; then
+                echo "Missing or empty output file: $filename"
+                all_outputs_exist=false
+            fi
+        done < ${CATALOG_NAME}
+    else
+        echo "Catalog:"
+        echo "${CATALOG_NAME}"
+        echo "does not exist"
+        all_outputs_exist="false"
+    fi
+else 
+    echo "Output folder:"
+    echo "${OUT_DIR_NC}"
+    echo "Not existing"
+    all_outputs_exist="false"
+fi
+
+echo "all_restarts_exist: ${all_restarts_exist}"
+echo "all_outputs_exist : ${all_outputs_exist}"
+
+if [ "${all_restarts_exist}" == "true" ] && [ "${all_outputs_exist}" == "true" ]; then 
+    all_files_exist="true"
+else
+    all_files_exist="false"
+fi
+
+# do final check
+if [[ "${all_files_exist}" == "true" ]]; then
+    echo "All output files exist for cycle %CYCLE_NUMBER%. Setting event outputs_ok"
+    # Use ecflow_client to set the entire cycle family as complete
+    #ecflow_client --port=${ECF_PORT} --host=${ECF_HOST} --force=complete recursive %ECF_NAME:h%
+    remote_ecflow_client --event outputs_ok
+    #exit 0
+else
+    echo "Output or restart files missing or incomplete for this cycle. " 
+    echo "Proceeding with normal execution of the cycle"
+    #exit 0
+    remote_ecflow_client --event outputs_nok    
+fi
+
+%manual
+check restarts and outputs:
+Verify the presence of restart and outputs 
+produced by the current cycle. If all files are present
+the cycle family is set to complete. 
+Note! I'm not checking for the restarts necessary to initialize
+the cycle, but the ones supposed to be produced!
+%end
+
+%include <header/tail_slurm.h>

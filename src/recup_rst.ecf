@@ -63,7 +63,7 @@ else
         exit 1 
     fi   
     export NFILESEXPECTED=%NPROCS_NEMO%
-    NFILESFOUND=$(find ${RESTART_FOLDER} -type f | wc -l)
+    NFILESFOUND=$(find ${RESTART_FOLDER} -type f -name "*.nc" | wc -l)
     if [  ${NFILESFOUND} -ne ${NFILESEXPECTED} ]; then 
         echo "Error. The number of restarts found (${NFILESFOUND})"
         echo "  is different than the number expected (${NFILESEXPECTED})"

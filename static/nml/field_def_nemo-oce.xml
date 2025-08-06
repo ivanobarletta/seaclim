@@ -652,6 +652,8 @@ that are available in the tidal-forcing implementation (see
       <field id="Ce_oce"      long_name="Evaporaion coefficient over open ocean"        standard_name="evap_coefficient_water"                unit=""     />
       <field id="Ch_oce"      long_name="Sensible heat coefficient over open ocean"     standard_name="sensible_heat_coefficient_water"       unit=""     />
       <field id="theta_zt"    long_name="Potential air temperature at z=zt"             standard_name="potential_air_temperature_at_zt"       unit="degC" />
+      <field id="charn"       long_name="Charnok Parameter"                             standard_name="charnok"                               unit=""     />
+      <field id="Cdn_oce"     long_name="Neutral Drag coefficient over open ocean"      standard_name="neutral_drag_coefficient_water"        unit=""     />
       <field id="q_zt"        long_name="Specific air humidity at z=zt"                 standard_name="specific_air_humidity_at_zt"           unit="kg/kg"/>
       <field id="theta_zu"    long_name="Potential air temperature at z=zu"             standard_name="potential_air_temperature_at_zu"       unit="degC" />
       <field id="q_zu"        long_name="Specific air humidity at z=zu"                 standard_name="specific_air_humidity_at_zu"           unit="kg/kg"/>
@@ -764,8 +766,6 @@ that are available in the tidal-forcing implementation (see
 
     <!-- Single use grid_refs not requiring field_groups (grid_U) -->
     <field id="uoce_e3u_vsum" long_name="ocean current along i-axis * e3u summed on the vertical"  field_ref="uoce_e3u"   unit="m3/s"  grid_ref="grid_U_vsum" />
-
-    <field id="e3us"         long_name="U-cell thickness"   field_ref="e3u"        standard_name="cell_thickness"         unit="m"     grid_ref="grid_U_SFC_inner"/>
   
     <field_group id="group_U_2D" grid_ref="grid_U_2D" >  <!-- Start of field group for grid_U_2D -->
       <field id="hu"            long_name="water column height at U point"           standard_name="water_column_height_U"       unit="m" />
@@ -776,7 +776,6 @@ that are available in the tidal-forcing implementation (see
       <field id="uocetr_vsum_cumul" long_name="ocean current along i-axis * e3u * e2u cumulated from southwest point" freq_offset="_reset_" operation="instant" freq_op="1mo"  unit="m3/s" />
       <field id="msftbarot"         long_name="ocean_barotropic_mass_streamfunction"  unit="kg s-1"           > uocetr_vsum_cumul * $rho0 </field>
       <field id="ssu"          long_name="ocean surface current along i-axis"         unit="m/s"                             />
-      <field id="ssu_e3u"      long_name="ocean surface current along i-axis * e3us"                                                           unit="m/s*m" > ssu * e3us </field>
       <field id="ubar"         long_name="ocean barotropic current along i-axis"      unit="m/s"                             />
       <field id="ssuww"        long_name="ocean surface wind work along i-axis"       standard_name="surface_x_wind_work"    unit="N/m*s" > utau * ssu </field>
       <!-- AGRIF sponge -->
@@ -793,6 +792,8 @@ that are available in the tidal-forcing implementation (see
     </field_group>     <!-- End of field group for grid_U_2D -->
   
     <field_group id="group_U_2D_inner" grid_ref="grid_U_2D_inner" >  <!-- Start of field group for grid_U_2D_inner -->
+      <field id="e3us"          long_name="U-cell thickness"   field_ref="e3u"                     standard_name="cell_thickness"              unit="m"          grid_ref="grid_U_SFC_inner"/>
+      <field id="ssu_e3u"      long_name="ocean surface current along i-axis * e3us"                                                                   unit="m/s*m" > ssu * e3us </field>
       <field id="sbu"          long_name="ocean bottom current along i-axis"          unit="m/s"   />
       <!-- uoce_eiv: available EIV (ln_ldfeiv=T) -->
       <field id="ueiv_heattr"   long_name="ocean bolus heat transport along i-axis"     standard_name="ocean_heat_x_transport_due_to_bolus_advection"  unit="W"    />
@@ -840,15 +841,11 @@ that are available in the tidal-forcing implementation (see
 
   <field_group id="grid_V">
 
-    <!-- Single use grid_refs not requiring field_groups (grid_V) -->
-    <field id="e3vs"         long_name="V-cell thickness"   field_ref="e3v"       standard_name="cell_thickness"              unit="m"          grid_ref="grid_V_SFC_inner"/>
-
     <field_group id="group_V_2D" grid_ref="grid_V_2D" >  <!-- Start of field group for grid_V_2D -->
       <field id="hv"            long_name="water column height at V point"           standard_name="water_column_height_V"       unit="m" />
       <field id="e1v"           long_name="V-cell width in longitudinal direction"   standard_name="cell_width"                  unit="m" />
   
       <field id="ssv"          long_name="ocean surface current along j-axis"         unit="m/s"                             />
-      <field id="ssv_e3v"      long_name="ocean surface current along j-axis * e3vs"  unit="m/s*m"                            > ssv * e3vs </field>
       <field id="vbar"         long_name="ocean barotropic current along j-axis"      unit="m/s"                             />
       <field id="ssvww"        long_name="ocean surface wind work along j-axis"       standard_name="surface_y_wind_work"    unit="N/m*s" > vtau * ssv </field>
       <!-- AGRIF sponge -->
@@ -865,6 +862,8 @@ that are available in the tidal-forcing implementation (see
     </field_group>     <!-- End of field group for grid_V_2D -->
   
     <field_group id="group_V_2D_inner" grid_ref="grid_V_2D_inner" >  <!-- Start of field group for grid_V_2D_inner -->
+      <field id="e3vs"         long_name="V-cell thickness"   field_ref="e3v"                     standard_name="cell_thickness"              unit="m"          grid_ref="grid_V_SFC_inner"/>
+      <field id="ssv_e3v"      long_name="ocean surface current along j-axis * e3vs"  unit="m/s*m"                            > ssv * e3vs </field>
       <field id="sbv"           long_name="ocean bottom current along j-axis"          unit="m/s"   />
       <!-- voce_eiv: available EIV (ln_ldfeiv=T)  -->
       <field id="veiv_heattr"   long_name="ocean bolus heat transport along j-axis"     standard_name="ocean_heat_y_transport_due_to_bolus_advection"  unit="W"    />
@@ -914,6 +913,9 @@ that are available in the tidal-forcing implementation (see
   <field_group id="grid_W" grid_ref="grid_W_3D">
 
     <field_group id="group_W_2D_inner" grid_ref="grid_W_2D_inner" >  <!-- Start of field group for grid_W_2D_inner -->
+      <field id="zflxs"       long_name="TKE flux sbc"                         standard_name="tke_sbc"                              unit="1/s2"     />
+      <field id="crban"       long_name="Craig and banner coeff"               standard_name="tke_crban"                            unit="no_units" />
+      <field id="zhsro"       long_name="TKE roughness lenght"                 standard_name="tke_zhsro"                            unit="m"        />
       <!-- avt_tide: available with ln_zdfiwm=T -->
       <field id="pcmap_iwm"   long_name="power consumed by wave-driven mixing" standard_name="vertically_integrated_power_consumption_by_wave_driven_mixing" unit="W/m2"/>
       <!-- GEOMETRIC fields (requires nn_aei_ijk_t = 32)  -->
@@ -980,6 +982,8 @@ that are available in the tidal-forcing implementation (see
       <field id="ediss_k"      long_name="Kolmogorov energy dissipation (tke scheme)"     standard_name="Kolmogorov_energy_dissipation"         unit="W/kg"    />
       <field id="eshear_k"     long_name="energy source from vertical shear"              standard_name="energy_source_from_shear"              unit="W/kg"    />
       <field id="estrat_k"     long_name="energy sink from stratification"                standard_name="energy_sink_from_stratification"       unit="W/kg"    />
+      <field id="ediff_k"      long_name="energy vertical diffusion"                      standard_name="energy_vertical_diffusion"             unit="W/kg"    />
+      <field id="tke_k"        long_name="turbulent kinetic energy"                       standard_name="turbulent_kinetic_energy"              unit="m2/s2"   />
     </field_group>     <!-- End of field group for grid_W_3D_inner -->
 
   </field_group>  <!-- End of field group for grid_W -->
@@ -1028,6 +1032,7 @@ that are available in the tidal-forcing implementation (see
     <field id="temptot"    long_name="global mean temperature"                      standard_name="sea_water_potential_temperature"                unit="degC" />
     <field id="saltot"     long_name="global mean salinity"                         standard_name="sea_water_salinity"                             unit="1e-3" />
     <field id="ssttot"     long_name="global mean sea surface temperature"          standard_name="sea_water_conservative_temperature"             unit="degC" />
+    <field id="heattot"    long_name="Total heat content"                           standard_name="total_heat_content"                             unit="" />
     <!-- EOS = TEOS-10 -->
     <field id="temptot_pot" long_name="global mean potential temperature"            standard_name="sea_water_potential_temperature"               unit="degC" />
 

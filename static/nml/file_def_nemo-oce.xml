@@ -8,7 +8,7 @@
 ============================================================================================================
     -->
 
-    <file_definition type="one_file" name="OUTPUTS/@expname@_@freq@" sync_freq="1d" min_digits="4">
+    <file_definition type="multiple_file" name="OUTPUTS/@expname@_@freq@" sync_freq="1d" min_digits="4">
       <file_group id="1ts" output_freq="1ts"  output_level="10" enabled=".TRUE."/> <!-- 1 time step files -->
       <file_group id="1h" output_freq="1h"  split_freq="1d"  output_level="10" enabled=".TRUE."> <!-- 1h files -->
         <file id="file01" name_suffix="-m_2DT-oce"       description="ocean T grid variables" >

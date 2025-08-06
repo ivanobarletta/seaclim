@@ -70,6 +70,12 @@ mkdir -p ${OUT_DIR_NC}
 # move outputs in output directory
 /bin/mv ${MEMBER}eNEATL12_*nc ${OUT_DIR_NC}
 
+# make catalog
+cd ${OUT_DIR_NC}
+CATALOG_NAME="CATALOG_OUTPUTS_M${MEMBER}_H${HINDCAST_YEAR}_C${CYCLE_NUMBER}_${CYCLE_START_DATE}"
+
+du -k ${MEMBER}*.nc | awk "{printf \"%%-50s %%10.2f KB\\n\", \$2, \$1}" > ${CATALOG_NAME}
+
 # go back to calc dir 
 cd ${CALC_DIR}
 
@@ -77,9 +83,9 @@ cd ${CALC_DIR}
 OUT_DIR_DATA=${OUTPUT_BASE_DIR}/M${MEMBER}/H${HINDCAST_YEAR}/C${CYCLE_NUMBER}_${CYCLE_START_DATE}/DATA
 mkdir -p ${OUT_DIR_DATA}
 
-/bin/mv ocean.output  ${OUT_DIR_DATA}
-/bin/mv timing.output ${OUT_DIR_DATA}
-/bin/mv output.namelist.dyn ${OUT_DIR_DATA}
+/bin/cp ocean.output  ${OUT_DIR_DATA}
+/bin/cp timing.output ${OUT_DIR_DATA}
+/bin/cp output.namelist.dyn ${OUT_DIR_DATA}
 
 %manual
 merge move outputs:

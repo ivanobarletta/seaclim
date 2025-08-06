@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
 import pandas as pd
-from ecflow import Trigger, Defs
+from ecflow import Trigger, Defs, Event, Complete
 from os.path import join
 
 nMembers        = 1         # 4
 hindcastYear1   = 1993      # 1993
 hindcastYear2   = 1993      # 2019
 
-hindcast_month_periods = 5 # 62
+hindcast_month_periods = 6 # 62
 
 start_month_day = "0101"    # "1101"
 
@@ -153,7 +153,7 @@ for member in membersList:
             nit000 += n_model_steps
 
             if icycle > 1:
-                cycle_family.add( Trigger ( f"CYCLE_{str(icyclem1).zfill(2)}/move_rst == complete"  ) )
+                cycle_family.add( Trigger ( f"CYCLE_{str(icyclem1).zfill(2)} == complete"  ) )
 
             cycle_family.add_variable("CYCLE_NUMBER"            , str(icycle).zfill(2))             # 01,02,03   
             cycle_family.add_variable("CYCLE_NUMBER_M1"         , str(icyclem1).zfill(2))           # 00,01,02
@@ -165,19 +165,26 @@ for member in membersList:
             cycle_family.add_variable("CYCLE_LAST_DATE"         , cycle_last_date_str)              # YYYYmmdd
             cycle_family.add_variable("CYCLE_DAYS"              , n_days)                           # int
             
+            # NEW: Add output check task at the beginning of each cycle 
+            # if restarts & outputs are present the cycle is skipped
+            task_check_output = cycle_family.add_task(f"check_outputs")
+            task_check_output.add_variable("run_time", "00:03:00")  # Quick check should be fast
+            task_check_output.add( Event("outputs_ok"), Event("outputs_nok") )
+
             task_prepare_run = cycle_family.add_task(f"prepare_run")    
+            task_prepare_run.add( Trigger( "check_outputs == complete"), Complete("check_outputs:outputs_ok") )
 
             task_recup_rst = cycle_family.add_task(f"recup_rst")
-            task_recup_rst.add( Trigger( "prepare_run == complete") )            
+            task_recup_rst.add( Trigger( "prepare_run == complete"), Complete("check_outputs:outputs_ok") )            
 
             task_recup_atm = cycle_family.add_task(f"recup_atm")
-            task_recup_atm.add( Trigger( "prepare_run == complete") )
+            task_recup_atm.add( Trigger( "prepare_run == complete"), Complete("check_outputs:outputs_ok") )
             
             task_recup_bdy = cycle_family.add_task(f"recup_bdy")
-            task_recup_bdy.add( Trigger( "prepare_run == complete") )
+            task_recup_bdy.add( Trigger( "prepare_run == complete"), Complete("check_outputs:outputs_ok") )
 
             task_model_run = cycle_family.add_task(f"model_run")
-            task_model_run.add( Trigger ( "recup_rst == complete and recup_atm == complete and recup_bdy == complete" ) )
+            task_model_run.add( Trigger ( "recup_rst == complete and recup_atm == complete and recup_bdy == complete" ), Complete("check_outputs:outputs_ok") )
             task_model_run.add_variable("run_time",'00:30:00')
 
             #task_fake_model = cycle_family.add_task(f"fake_model")
@@ -185,11 +192,11 @@ for member in membersList:
 
             # task move restart
             task_move_rst = cycle_family.add_task(f"move_rst")
-            task_move_rst.add( Trigger ( "model_run == complete"))
+            task_move_rst.add( Trigger ( "model_run == complete"), Complete("check_outputs:outputs_ok"))
             
             # task merge / move output
             task_merge_mv_out = cycle_family.add_task(f"merge_mv_out")
-            task_merge_mv_out.add( Trigger( "model_run == complete") )
+            task_merge_mv_out.add( Trigger( "model_run == complete"), Complete("check_outputs:outputs_ok") )
             task_merge_mv_out.add_variable("run_time","00:10:00")
 
             # task clean calc folder

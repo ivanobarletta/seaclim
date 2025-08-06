@@ -33,11 +33,23 @@ cd ${TMPDIR_RESTART}
 
 /bin/mv ???eNEATL12_*_????.nc ${RESTART_OUT_DIR}
 
+# go in restart output dir and create a CATALOG of restarts
+cd ${RESTART_OUT_DIR}
+CATALOG_NAME="CATALOG_RESTARTS_M${MEMBER}_H${HINDCAST_YEAR}_C${CYCLE_NUMBER}_${CYCLE_START_DATE}"
+
+# Note: The name of catalog file should not contain the number of NEMO procs and, most
+# of all, should be the only one to be in the ${RESTART_OUT_DIR}. This is because, when I check 
+# the presence of restart files through the catalog, this ensures correspondence between the 
+# catalog and the restart files.
+
+du -k ${MEMBER}*.nc | awk "{printf \"%%-50s %%10.2f KB\\n\", \$2, \$1}" > ${CATALOG_NAME}
+
 echo "Moving RST completed"
 
 %manual
 move_rst:
-    Move restart files to root restart directory 
+    1) Move restart files to root restart directory 
+    2) Create a CATALOG file with all the restarts files names
 %end
 
 %include <header/tail_slurm.h>
