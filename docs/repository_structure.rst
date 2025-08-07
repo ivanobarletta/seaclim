@@ -5,6 +5,7 @@ Repository Structure
 
 The repository folder is organized as follows
 
+
 .. code-block:: bash
     create_suite.py
 
