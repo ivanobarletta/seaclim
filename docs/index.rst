@@ -11,7 +11,9 @@ Welcome to SEACLIM WP2's Documentation
    :caption: Contents:
 
    intro.rst
+   setting_server.rst
    simulations.rst 
+   folders.rst
 
 Indices and tables
 ==================
